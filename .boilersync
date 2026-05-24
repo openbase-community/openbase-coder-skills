@@ -1,0 +1,15 @@
+{
+  "template": "https://github.com/openbase-community/templates.git#skills",
+  "template_commit": "e303c8ea29f7f19c6beddd71dec3e361acfb11a0",
+  "name_snake": "openbase_coder",
+  "name_pretty": "Openbase Coder",
+  "variables": {
+    "name_snake": "openbase_coder",
+    "name_pretty": "Openbase Coder",
+    "repo_name_kebab": "openbase-coder-skills",
+    "repo_name_pretty": "Openbase Coder Skills",
+    "author_github_name": "openbase-community",
+    "skill_description": "Shared skills for Openbase Coder workflows.",
+    "skill_trigger_summary": "Openbase Coder workflows, tools, and local operational conventions"
+  }
+}
