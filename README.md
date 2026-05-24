@@ -1,6 +1,6 @@
 # Openbase Coder Skills
 
-Skills repository for Openbase Coder Skills.
+Skills repository for Openbase Coder workflows.
 
 ## Install with `vercel-labs/skills`
 
@@ -8,8 +8,9 @@ Skills repository for Openbase Coder Skills.
 # List available skills
 npx skills add openbase-community/openbase-coder-skills --list
 
-# Install the included skill
-npx skills add openbase-community/openbase-coder-skills --skill openbase-coder
+# Install individual skills
+npx skills add openbase-community/openbase-coder-skills --skill openbase-coder-routines
+npx skills add openbase-community/openbase-coder-skills --skill openbase-computer-use-cli
 ```
 
 Optional flags:
@@ -19,4 +20,5 @@ Optional flags:
 
 ## Included Skills
 
-- `openbase-coder` - Shared skills for Openbase Coder workflows.
+- `openbase-coder-routines` - Use `openbase-coder routines ...`, the Routines console page, and the local routines API while keeping routine operations out of the Super Agents MCP tool surface.
+- `openbase-computer-use-cli` - Use the Openbase Coder computer-use CLI to control the user's Mac through the LiveKit screen-share companion.
