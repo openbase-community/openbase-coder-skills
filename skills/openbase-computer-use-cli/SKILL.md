@@ -47,15 +47,13 @@ repo edits that do not require operating the user's visible desktop.
   indicate the control is doing the wrong thing, immediately run:
 
   ```bash
-  cd /Users/gabemontague/Projects/openbase/code/openbase-coder-workspace/cli
-  uv run openbase-coder computer-use interrupt
+  openbase-coder computer-use interrupt
   ```
 
   For Claude Chrome runs, use:
 
   ```bash
-  cd /Users/gabemontague/Projects/openbase/code/openbase-coder-workspace/cli
-  uv run openbase-coder claude-chrome abort
+  openbase-coder claude-chrome abort
   ```
 
 - Keep instructions narrow and explicit. Use at least `--max-steps 20` for
@@ -69,65 +67,55 @@ repo edits that do not require operating the user's visible desktop.
 
 ## Workflow
 
-1. Work from the CLI repo:
+1. Check status before starting or steering:
 
    ```bash
-   cd /Users/gabemontague/Projects/openbase/code/openbase-coder-workspace/cli
+   openbase-coder computer-use status
    ```
 
-2. Check status before starting or steering:
+2. Start a run with a short, concrete instruction:
 
    ```bash
-   uv run openbase-coder computer-use status
-   ```
-
-3. Start a run with a short, concrete instruction:
-
-   ```bash
-   uv run openbase-coder computer-use start --max-steps 8 "Open System Settings."
+   openbase-coder computer-use start --max-steps 8 "Open System Settings."
    ```
 
    The CLI discovers the active LiveKit room, launches the companion if needed,
    starts screen sharing, then starts computer use. Screen sharing is stopped
    automatically after completion.
 
-4. If the room resolver is confused and the correct room name is known, pass it
+3. If the room resolver is confused and the correct room name is known, pass it
    explicitly:
 
    ```bash
-   uv run openbase-coder computer-use start --room ROOM_NAME --max-steps 8 "..."
+   openbase-coder computer-use start --room ROOM_NAME --max-steps 8 "..."
    ```
 
-5. Steer an active run instead of starting a second one:
+4. Steer an active run instead of starting a second one:
 
    ```bash
-   uv run openbase-coder computer-use steer "Use Spotlight only. Do not type into the current chat."
+   openbase-coder computer-use steer "Use Spotlight only. Do not type into the current chat."
    ```
 
-6. Queue a follow-up instruction when the user wants chained work after the
+5. Queue a follow-up instruction when the user wants chained work after the
    current task finishes:
 
    ```bash
-   uv run openbase-coder computer-use queue "Then open the saved file and verify it."
+   openbase-coder computer-use queue "Then open the saved file and verify it."
    ```
 
    Queueing requires an active computer-use run. The queued instruction starts
    before the CLI stops screen sharing, so do not start a separate run for the
    next step.
 
-7. Interrupt immediately when the user asks or the run is acting in the wrong
+6. Interrupt immediately when the user asks or the run is acting in the wrong
    app:
 
    ```bash
-   uv run openbase-coder computer-use interrupt
+   openbase-coder computer-use interrupt
    ```
 
-8. Inspect logs if behavior is unclear:
-
-   ```bash
-   tail -n 120 ~/.openbase/logs/livekit-companion.log
-   tail -n 120 ~/.openbase/logs/django-cli.log
-   ```
+7. Inspect recent Openbase Coder and LiveKit companion logs if behavior is
+   unclear. Limit log output because these logs can be large.
 
 ## Claude Chrome Mode
 
@@ -138,26 +126,25 @@ and starts Claude Code with `--chrome`.
 Start:
 
 ```bash
-cd /Users/gabemontague/Projects/openbase/code/openbase-coder-workspace/cli
-uv run openbase-coder claude-chrome start --url about:blank --max-turns 8 "Open the target site and inspect the page."
+openbase-coder claude-chrome start --url about:blank --max-turns 8 "Open the target site and inspect the page."
 ```
 
 Steer:
 
 ```bash
-uv run openbase-coder claude-chrome steer "Try the search field instead."
+openbase-coder claude-chrome steer "Try the search field instead."
 ```
 
 Queue:
 
 ```bash
-uv run openbase-coder claude-chrome queue "Then summarize the page contents."
+openbase-coder claude-chrome queue "Then summarize the page contents."
 ```
 
 Abort:
 
 ```bash
-uv run openbase-coder claude-chrome abort
+openbase-coder claude-chrome abort
 ```
 
 Steering in this mode replaces the current Claude browser process with a
@@ -168,21 +155,12 @@ one exits, while the same Chrome window remains shared.
 
 ## Notes
 
-- Default installed companion bundle:
-
-  ```text
-  /Applications/Openbase Coder.app/Contents/Resources/app/companion/livekit-swift-example/.derivedData/Build/Products/Debug/OpenbaseScreenShareCompanion.app
-  ```
-
-- If needed, force that companion path for a command:
-
-  ```bash
-  OPENBASE_LIVEKIT_COMPANION_APP="/Applications/Openbase Coder.app/Contents/Resources/app/companion/livekit-swift-example/.derivedData/Build/Products/Debug/OpenbaseScreenShareCompanion.app" \
-    uv run openbase-coder computer-use status
-  ```
-
-- The companion reads `OPENAI_API_KEY` from `~/.openbase/.env`; do not use or
-  create `~/.openai_api_key`.
+- Assume `openbase-coder` is installed on `PATH`; do not invoke it through a
+  workspace checkout or package-manager wrapper in this skill.
+- The companion should be launched through the CLI's configured discovery path;
+  do not hard-code a global companion app location in this skill.
+- The companion reads `OPENAI_API_KEY` from the Openbase Coder environment; do
+  not use or create alternate ad hoc key files.
 - The implementation is in the Openbase Coder workspace:
   - CLI: `cli/openbase_coder_cli/cli/computer_use.py`
   - Claude Chrome CLI: `cli/openbase_coder_cli/cli/claude_chrome.py`

@@ -39,7 +39,8 @@ Use this skill when:
 
 ## Main Commands
 
-Use the CLI as the canonical user-facing command surface:
+Assume `openbase-coder` is installed on `PATH`. Use the CLI as the canonical
+user-facing command surface:
 
 ```bash
 openbase-coder routines list
@@ -60,7 +61,7 @@ openbase-coder routines create daily-check \
   --time 09:00 \
   --timezone America/New_York \
   --target-name "workspace-health" \
-  --cwd /absolute/project/path \
+  --cwd PROJECT_PATH \
   --mode default \
   --approval-policy never \
   --sandbox-type dangerFullAccess
@@ -103,9 +104,9 @@ cli/openbase_coder_cli/cli/routines.py
 cli/openbase_coder_cli/mcp/session_manager.py
 cli/openbase_coder_cli/openbase_coder_cli_app/views.py
 cli/openbase_coder_cli/openbase_coder_cli_app/urls.py
-coder-ui/src/pages/Routines.tsx
-coder-ui/src/App.tsx
-coder-ui/src/components/layouts/ExampleLayout.tsx
+coder-react/src/pages/Routines.tsx
+coder-react/src/App.tsx
+coder-react/src/components/layouts/ExampleLayout.tsx
 ```
 
 ## Scheduler Guidance
