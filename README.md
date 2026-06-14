@@ -10,7 +10,7 @@ npx skills add openbase-community/openbase-coder-skills --list
 
 # Install individual skills
 npx skills add openbase-community/openbase-coder-skills --skill openbase-coder-routines
-npx skills add openbase-community/openbase-coder-skills --skill openbase-computer-use-cli
+npx skills add openbase-community/openbase-coder-skills --skill openbase-computer-use
 ```
 
 Optional flags:
@@ -21,4 +21,4 @@ Optional flags:
 ## Included Skills
 
 - `openbase-coder-routines` - Use `openbase-coder routines ...`, the Routines console page, and the local routines API while keeping routine operations out of the Super Agents MCP tool surface.
-- `openbase-computer-use-cli` - Use the Openbase Coder computer-use CLI to control the user's Mac through the LiveKit screen-share companion.
+- `openbase-computer-use` - Route visible desktop control to the right path: native Computer Use tools on macOS, and the Openbase Coder Linux CLI on DevSpace Xorg/DCV desktops.

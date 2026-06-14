@@ -1,21 +1,8 @@
----
-name: openbase-computer-use-cli
-description: >-
-  Use this skill when an agent needs to operate the user's visible Mac desktop
-  for Openbase Coder workflows through the Computer Use tools available in the
-  current agent environment.
-version: 0.1.0
----
-
-# Openbase Computer Use
+# Openbase Computer Use — Codex on macOS
 
 Use the Computer Use tools available in the current agent environment to control
 the user's visible Mac desktop. Do not use the `openbase-coder computer-use`
 command to perform desktop control when tool-based Computer Use is available.
-
-Computer use is intentionally visible. The user can stop the operation at any
-time. Treat any user request to stop, pause, abort, or interrupt as an immediate
-instruction to stop issuing further desktop actions.
 
 ## Screen-Share Rule
 
@@ -66,15 +53,17 @@ foregrounding the target app again. Keep these fallbacks narrow and visible.
 
 ## When To Use
 
-Use this skill when:
+Use this path when:
 
+- You are a Codex agent and `openbase-coder computer-use` CLI commands are
+  available in your environment.
 - The user asks to use Openbase Coder computer use, screen control, or computer
   control to operate their Mac.
 - The user asks to test keyboard, mouse, or UI input through visible Computer
   Use tools.
 - The user asks to inspect or manipulate a visible desktop app.
 
-Do not use this skill for ordinary shell automation, browser automation, or
+Do not use this path for ordinary shell automation, browser automation, or
 repo edits that do not require operating the user's visible desktop.
 
 ## Safety Rules
