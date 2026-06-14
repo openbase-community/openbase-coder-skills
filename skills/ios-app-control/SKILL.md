@@ -50,6 +50,49 @@ start the regular developer call:
 openbase-coder user ios start-developer-call
 ```
 
+## Manual Desktop Screen Control
+
+Use this when the user wants to manually control a Linux Openbase DevSpace from
+the Openbase iOS app. This is separate from AI computer-use. Do not start an AI
+computer-use run unless the user explicitly asks the AI to operate the screen.
+
+How the iOS side works:
+
+- The iOS app must be open, authenticated, and in an active LiveKit call.
+- When room control connects, the iOS app asks the local backend to start the
+  Linux screen-share companion through `/api/livekit-companion-start/`.
+- Once the remote screen-share tile appears, the user opens it full screen and
+  taps Remote to enable manual control.
+- The full-screen screen-share view supports pinch zoom, drag-to-pan, a
+  trackpad surface, a scroll strip, click buttons, typed text, and shortcut
+  keys.
+
+If the user asks the agent to start screen sharing for manual iOS control from
+the Linux desktop side, use the Openbase computer-use companion without starting
+the AI runner:
+
+```bash
+python - <<'PY'
+from openbase_coder_cli.cli.computer_use import CompanionClient, _load_companion_session
+
+client = CompanionClient()
+client.ensure_running()
+client.start_screen_share(_load_companion_session(""))
+print("Openbase screen share started for manual iOS control.")
+PY
+```
+
+Stop that manual screen share:
+
+```bash
+python - <<'PY'
+from openbase_coder_cli.cli.computer_use import CompanionClient
+
+CompanionClient().stop_screen_share()
+print("Openbase screen share stopped.")
+PY
+```
+
 ## Notes
 
 - Only use this for explicit user requests to control their phone.
@@ -59,3 +102,7 @@ openbase-coder user ios start-developer-call
 - `start-livekit-voice-test` assumes the LiveKit voice test fields are already
   filled in on the phone.
 - `start-developer-call` starts the normal Openbase dispatcher/developer call.
+- Manual desktop screen control requires an active screen share. If the user
+  cannot see the remote screen in iOS, start the companion screen share first;
+  if the user cannot control it, make sure they tapped Remote in the full-screen
+  screen-share view.
