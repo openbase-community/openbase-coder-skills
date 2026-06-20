@@ -52,15 +52,21 @@ openbase-coder user ios start-developer-call
 
 ## Manual Desktop Screen Control
 
-Use this when the user wants to manually control a Linux Openbase DevSpace from
-the Openbase iOS app. This is separate from AI computer-use. Do not start an AI
-computer-use run unless the user explicitly asks the AI to operate the screen.
+Use this when the user wants to manually control a desktop from the Openbase iOS
+app through an active Openbase screen share. Manual iOS control is
+cross-platform: it can control any Openbase screen-share companion that
+implements the `openbase.remote_control.*` LiveKit messages. This is separate
+from AI computer-use. Do not start an AI computer-use run unless the user
+explicitly asks the AI to operate the screen.
 
 How the iOS side works:
 
 - The iOS app must be open, authenticated, and in an active LiveKit call.
-- When room control connects, the iOS app asks the local backend to start the
-  Linux screen-share companion through `/api/livekit-companion-start/`.
+- On Linux DevSpaces, when room control connects, the iOS app asks the local
+  backend to start the Linux screen-share companion through
+  `/api/livekit-companion-start/`.
+- On macOS, the screen share is provided by the Electron app's bundled LiveKit
+  companion instead of the Linux `openbase-coder computer-use` CLI companion.
 - Once the remote screen-share tile appears, the user opens it full screen and
   taps Remote to enable manual control.
 - The full-screen screen-share view supports pinch zoom, drag-to-pan, a
@@ -69,7 +75,7 @@ How the iOS side works:
 
 If the user asks the agent to start screen sharing for manual iOS control from
 the Linux desktop side, use the Openbase computer-use companion without starting
-the AI runner:
+the AI runner. This CLI path is Linux-only:
 
 ```bash
 python - <<'PY'
@@ -82,7 +88,7 @@ print("Openbase screen share started for manual iOS control.")
 PY
 ```
 
-Stop that manual screen share:
+Stop that Linux DevSpace manual screen share:
 
 ```bash
 python - <<'PY'
@@ -102,7 +108,7 @@ PY
 - `start-livekit-voice-test` assumes the LiveKit voice test fields are already
   filled in on the phone.
 - `start-developer-call` starts the normal Openbase dispatcher/developer call.
-- Manual desktop screen control requires an active screen share. If the user
-  cannot see the remote screen in iOS, start the companion screen share first;
-  if the user cannot control it, make sure they tapped Remote in the full-screen
-  screen-share view.
+- Manual desktop screen control requires an active Openbase screen share. If the
+  user cannot see the remote screen in iOS, start the platform-appropriate
+  companion screen share first; if the user cannot control it, make sure they
+  tapped Remote in the full-screen screen-share view.

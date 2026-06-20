@@ -33,20 +33,26 @@ Determine your environment and follow the corresponding sub-file:
 
 ## Manual iOS Remote Control Screen Share
 
-Use this when the user wants to control the Linux desktop manually from the
-Openbase iOS app. This is not an AI computer-use run. Do not call
-`openbase-coder computer-use start` unless the user explicitly asks the AI to
-control the screen.
+Use this when the user wants to control a desktop manually from the Openbase iOS
+app through an active Openbase screen share. This is not an AI computer-use run.
+Do not call `openbase-coder computer-use start` unless the user explicitly asks
+the AI to control the screen.
 
 Requirements:
 
-- This flow is for Linux Openbase DevSpace desktops.
 - The Openbase iOS app must be in an active LiveKit call connected to the same
   backend/room.
-- The Linux companion must be available from the base image. If the companion is
-  not already running, the start path below launches it.
+- The iOS Remote UI is not Linux-only. It can control any Openbase screen-share
+  companion that implements the `openbase.remote_control.*` LiveKit messages.
+- The `openbase-coder computer-use` CLI companion commands below are Linux-only
+  and are intended for Linux Openbase DevSpace desktops. On macOS, use the
+  Electron app's bundled LiveKit companion screen-share controls instead of the
+  Linux CLI.
+- For Linux DevSpaces, the Linux companion must be available from the base
+  image. If the companion is not already running, the start path below launches
+  it.
 
-Start the screen share for manual iOS control:
+Start the Linux DevSpace screen share for manual iOS control:
 
 ```bash
 python - <<'PY'
@@ -64,7 +70,7 @@ endpoint when room control connects. Do not use raw `curl` for that endpoint
 unless you already have the right local auth headers; use the Python helper
 above for agent-initiated starts.
 
-Stop the manual screen share:
+Stop that Linux DevSpace manual screen share:
 
 ```bash
 python - <<'PY'
