@@ -34,55 +34,21 @@ Determine your environment and follow the corresponding sub-file:
 ## Manual iOS Remote Control Screen Share
 
 Use this when the user wants to control a desktop manually from the Openbase iOS
-app through an active Openbase screen share. This is not an AI computer-use run.
-Do not call `openbase-coder computer-use start` unless the user explicitly asks
-the AI to control the screen.
+app. Start the desktop screen share:
 
-Requirements:
-
-- The Openbase iOS app must be in an active LiveKit call connected to the same
-  backend/room.
-- The iOS Remote UI is not Linux-only. It can control any Openbase screen-share
-  companion that implements the `openbase.remote_control.*` LiveKit messages.
-- The `openbase-coder computer-use` CLI companion commands below are Linux-only
-  and are intended for Linux Openbase DevSpace desktops. On macOS, use the
-  Electron app's bundled LiveKit companion screen-share controls instead of the
-  Linux CLI.
-- For Linux DevSpaces, the Linux companion must be available from the base
-  image. If the companion is not already running, the start path below launches
-  it.
-
-Start the Linux DevSpace screen share for manual iOS control:
-
-```bash
-python - <<'PY'
-from openbase_coder_cli.cli.computer_use import CompanionClient, _load_companion_session
-
-client = CompanionClient()
-client.ensure_running()
-client.start_screen_share(_load_companion_session(""))
-print("Openbase screen share started for manual iOS control.")
-PY
+```
+openbase-coder desktop screen-share start
 ```
 
-The iOS app also calls the local backend's `/api/livekit-companion-start/`
-endpoint when room control connects. Do not use raw `curl` for that endpoint
-unless you already have the right local auth headers; use the Python helper
-above for agent-initiated starts.
+Stop the desktop screen share:
 
-Stop that Linux DevSpace manual screen share:
-
-```bash
-python - <<'PY'
-from openbase_coder_cli.cli.computer_use import CompanionClient
-
-CompanionClient().stop_screen_share()
-print("Openbase screen share stopped.")
-PY
+```
+openbase-coder desktop screen-share stop
 ```
 
-While the share is active, the user can open the full-screen screen-share view
-in the iOS app, enable Remote, and control the desktop with the trackpad,
-scroll strip, click buttons, keyboard field, and shortcut keys. The companion
-only accepts remote-control input after the iOS user enables Remote, and it
-disables manual remote control when the screen share stops.
+After the screen-share tile appears in iOS, the user opens it full screen and
+taps Remote to enable manual control.
+
+This is not an AI computer-use run. Do not call
+`openbase-coder computer-use start` unless the user explicitly asks the AI to
+control the screen.
