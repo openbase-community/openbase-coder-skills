@@ -46,6 +46,7 @@ user-facing command surface:
 openbase-coder routines list
 openbase-coder routines show ROUTINE_NAME
 openbase-coder routines create ROUTINE_NAME --prompt "Inspect project health." --time 09:00
+openbase-coder routines create poller --prompt "Poll for ready work." --interval-seconds 60
 openbase-coder routines update ROUTINE_NAME --disable
 openbase-coder routines update ROUTINE_NAME --enable
 openbase-coder routines run-due
@@ -65,6 +66,18 @@ openbase-coder routines create daily-check \
   --mode default \
   --approval-policy never \
   --sandbox-type dangerFullAccess
+```
+
+Interval routines are first-class and use `scheduleType=interval` plus
+`intervalSeconds`. Passing `--interval-seconds` to the CLI implies an interval
+routine:
+
+```bash
+openbase-coder routines create notion-prioritized-poller \
+  --prompt "Check Notion for prioritized work and dispatch ready cards." \
+  --interval-seconds 60 \
+  --cwd PROJECT_PATH \
+  --mode default
 ```
 
 Use `--thread-id` instead of `--target-name` when the routine must target one
@@ -115,7 +128,8 @@ For reliable run-on-time behavior, prefer a dedicated local scheduler process
 over tying execution to MCP server lifetime:
 
 1. Run `openbase-coder routines run-loop --interval 60` under launchd.
-2. Keep `openbase-coder routines run-due` idempotent by checking `lastRunDate`.
+2. Keep `openbase-coder routines run-due` idempotent by checking `lastRunDate`
+   for daily routines and `lastRunAt` for interval routines.
 3. Add file locking around state updates before relying on concurrent scheduler
    and console/manual runs.
 4. Persist scheduler health, such as last tick and last error, if the console
