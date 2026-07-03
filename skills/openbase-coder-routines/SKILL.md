@@ -26,7 +26,11 @@ Use this skill when:
 
 - Routines are an Openbase Coder/Super Agents wrapper concept, not a native
   Codex app-server concept.
-- Codex app-server owns threads and turns. Routine execution eventually calls
+- Routines have two first-class kinds:
+  - `agent` routines start or queue a Codex app-server/Super Agents turn.
+  - `command` routines run a normal local shell command and do not launch an AI
+    agent by themselves.
+- Codex app-server owns threads and turns. Only `agent` routine execution calls
   the same app-server `turn/start` path used by normal Super Agents turns.
 - Routine state is persisted in the local Super Agents state file through
   `super_agents.app_server_client.CodexAppServerClient`.
@@ -46,6 +50,7 @@ user-facing command surface:
 openbase-coder routines list
 openbase-coder routines show ROUTINE_NAME
 openbase-coder routines create ROUTINE_NAME --prompt "Inspect project health." --time 09:00
+openbase-coder routines create ROUTINE_NAME --kind command --command "make check" --time 09:00
 openbase-coder routines create poller --prompt "Poll for ready work." --interval-seconds 60
 openbase-coder routines update ROUTINE_NAME --disable
 openbase-coder routines update ROUTINE_NAME --enable
@@ -58,6 +63,7 @@ Routine creation supports these fields where needed:
 
 ```bash
 openbase-coder routines create daily-check \
+  --kind agent \
   --prompt "Inspect project health." \
   --time 09:00 \
   --timezone America/New_York \
@@ -82,6 +88,51 @@ openbase-coder routines create notion-prioritized-poller \
 
 Use `--thread-id` instead of `--target-name` when the routine must target one
 specific existing Codex app-server thread.
+
+Command routines use `--kind command` and `--command`. They may keep a prompt as
+handoff context, but the command is the routine start action:
+
+```bash
+openbase-coder routines create open-pr-review-routine \
+  --kind command \
+  --command "super-agents-open-pr-review-discover --workspace /path/to/openbase-coder-workspace --launch-reviews --model gpt-5.5 --reasoning-effort high --service-tier standard" \
+  --interval-seconds 300 \
+  --cwd /path/to/openbase-coder-workspace
+```
+
+For the open PR review routine, the command/code step must enumerate all PRs
+that meet the review criteria before any AI starts. Its output should be the
+precise eligible PR list and material state (`repo`, `number`, `url`, head/base
+SHAs, repo path, review key), while already reviewed, duplicate, unchanged, or
+unavailable PRs are excluded or summarized cheaply.
+
+The same command layer must also deterministically group linked PRs into review
+bundles before any agent starts. Use conservative signals such as shared feature
+or stack labels, shared normalized branch topics, same-author exact title/topic
+matches, workspace stack relationships, and cross-repo onboarding feature
+naming. The output should include one `reviewRequests[]` entry per grouped
+bundle, with the already-computed PR material and a scoped prompt for the
+reviewing agent. A later agent/deep-review step should consume these bounded
+requests rather than rediscovering repos, PRs, or linkage.
+
+When `super-agents-open-pr-review-discover` runs with `--launch-reviews`, it
+must use the Super Agents Python client/library to start or queue one review
+turn per grouped bundle. Do not shell out to `openbase-coder` for the handoff.
+The review turns are intentionally high-reasoning even though discovery is
+cheap and deterministic. The explicit default handoff config is:
+
+```text
+model: gpt-5.5
+reasoningEffort: high
+serviceTier: standard
+mode: default
+approvalPolicy: never
+sandboxType: dangerFullAccess
+```
+
+The scoped prompt for each review turn must include the already-computed bundle
+payload and safety constraints: no public comments, no approvals or requested
+changes, no merging, no pushing, no deploying, and no publishing.
 
 ## Console And API
 
@@ -163,7 +214,7 @@ pnpm build
 - If a user asks for a "routine page", use the existing Routines page instead
   of adding routine controls to Launchctl.
 - If a user asks "do routines require Codex app-server support?", answer that
-  they currently do not; they require Codex app-server only when launching the
-  actual thread/turn.
+  command routines do not; agent routines require Codex app-server when
+  launching the actual thread/turn.
 - Keep routine behavior backward compatible with the persisted Super Agents
   state shape.

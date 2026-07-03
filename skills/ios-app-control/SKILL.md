@@ -36,6 +36,17 @@ Unmute the active iOS voice call:
 openbase-coder user ios unmute
 ```
 
+Ask the foreground iOS app to upload its recent retained diagnostics logs to the
+local Openbase Coder server:
+
+```bash
+openbase-coder user ios upload-logs
+openbase-coder user ios upload-logs --limit 500
+```
+
+Uploaded entries are appended by the local server to
+`~/.openbase/logs/ios-app.log`.
+
 End the current normal iOS voice call, switch to the debug LiveKit voice test
 tab, and start the voice test call from the already-filled debug fields:
 
@@ -77,6 +88,9 @@ unless the user explicitly asks the AI to operate the screen.
 - `open-url` requires a URL scheme. It supports normal web URLs and custom deep
   links, but rejects `data:`, `file:`, and `javascript:` URLs.
 - Mute and unmute require an active Openbase voice call in the iOS app.
+- `upload-logs` requires the iOS app to be foregrounded or connected to the
+  app-control WebSocket. It reuses the app's diagnostics uploader and does not
+  require the user to tap the upload button.
 - `start-livekit-voice-test` assumes the LiveKit voice test fields are already
   filled in on the phone.
 - `start-developer-call` starts the normal Openbase dispatcher/developer call.

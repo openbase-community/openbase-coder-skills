@@ -1,21 +1,23 @@
 ---
 name: openbase-coder-reports
 description: >-
-  Use this skill when listing, filtering, reading, tagging, or querying
-  Openbase Coder report artifacts. Prefer the reports CLI/API over ad hoc
-  filesystem searches.
+  Use this skill when writing, listing, filtering, reading, tagging, or querying
+  Openbase Coder report artifacts. Include report provenance when creating
+  Super Agent reports, and prefer the reports CLI/API over ad hoc filesystem
+  searches.
 version: 0.1.0
 ---
 
 # Openbase Coder Reports
 
 Use the first-class reports command surface whenever a user or agent needs to
-find, inspect, or query report artifacts.
+write, find, inspect, or query report artifacts.
 
 ## When To Use
 
 Use this skill when:
 
+- the user asks to write, draft, create, or update a report or proposal
 - the user asks to list, find, open, read, summarize, or filter reports
 - the task mentions `.reports` folders across projects
 - the task needs report metadata, ids, tags, projects, repos, or date grouping
@@ -25,6 +27,33 @@ Use this skill when:
   endpoints
 
 ## Core Rule
+
+When writing a Markdown report, write it under the relevant project's
+`.reports` directory by default.
+
+If the report does not pertain to a project, write it under
+`~/.openbase/codex_home/.reports/`. Images or PDFs may also be used instead of
+Markdown if requested by the user.
+
+In reports and other Markdown, avoid tables with more than two or three columns
+because wide tables are hard to read on mobile.
+
+If the report is written by a Super Agent, start the file with YAML front matter
+that captures provenance from the Super Agent identity instructions:
+
+```markdown
+---
+openbase_report:
+  thread_id: <Super Agent thread id>
+  thread_name: <Super Agent thread name>
+  agent_name: <your agent name>
+---
+```
+
+Use the values from the current instructions, such as `Super Agent thread id:`,
+`Super Agent thread name:`, and `Your name is ...`. If a value is unavailable,
+omit only that field. Prefer this front matter over visible provenance sections
+or hidden comments for newly-created reports.
 
 Prefer:
 
