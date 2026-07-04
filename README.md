@@ -14,6 +14,7 @@ npx skills add openbase-community/openbase-coder-skills --skill openbase-compute
 npx skills add openbase-community/openbase-coder-skills --skill ios-app-control
 npx skills add openbase-community/openbase-coder-skills --skill openbase-coder-reports
 npx skills add openbase-community/openbase-coder-skills --skill openbase-super-agent-dispatcher
+npx skills add openbase-community/openbase-coder-skills --skill openbase-product-knowledge
 ```
 
 ## Openbase Codex Auto-Link
@@ -37,3 +38,4 @@ Optional flags:
 - `ios-app-control` - Control the foreground Openbase iOS app by opening a URL or deep link, muting or unmuting the active call, switching to the debug LiveKit voice test call, or switching back to the regular developer call.
 - `openbase-super-agent-dispatcher` - Dispatch, continue, steer, transfer, and manage Openbase Super Agents from a dispatcher or another Super Agent.
 - `openbase-coder-reports` - Write, discover, read, tag, and query Openbase Coder reports, including Super Agent provenance front matter.
+- `openbase-product-knowledge` - Answer questions about the Openbase Coder product (desktop app, iOS app, web console, Openbase Cloud) by routing to the correct page of the product docs at `cli/docs/` / docs.openbase.cloud.
