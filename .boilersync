@@ -1,6 +1,6 @@
 {
   "template": "https://github.com/openbase-community/templates.git#skills",
-  "template_commit": "c26e403bd173681c3cf9c1000383d8cb9dd8ecf8",
+  "template_commit": "00040c2dc82463468f80a34f5dcfd387c125fe4f",
   "name_snake": "openbase_coder",
   "name_pretty": "Openbase Coder Skills",
   "variables": {
