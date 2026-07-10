@@ -7,7 +7,7 @@ description: >-
   GitHub CLI. Trigger this skill when a message notes that onboarding has
   not been read yet, or when the user asks to set up integrations or
   redo onboarding.
-version: 0.1.0
+version: 0.2.0
 ---
 
 # Openbase Onboarding
@@ -74,7 +74,26 @@ gh auth status || gh auth login
 `gh auth login` is interactive; guide the user through choosing GitHub.com
 and their preferred auth method.
 
-### 2. Email
+### 2. Session-ID commit hooks
+
+`openbase-coder setup` installs a SessionStart hook
+(`~/.openbase/hooks/inject-session-id.sh`) into both Openbase agent homes so
+every agent knows its own thread/session ID and stamps commits with an
+`Agent-Thread-Id` trailer that ties each commit back to the session that
+produced it. No user choice is needed here — just verify it is in place:
+
+```bash
+test -x ~/.openbase/hooks/inject-session-id.sh \
+  && grep -q inject-session-id ~/.openbase/claude_config/settings.json \
+  && grep -qF '[[hooks.SessionStart]]' ~/.openbase/codex_home/config.toml \
+  && echo ok
+```
+
+If anything is missing, re-run `openbase-coder setup` (it is idempotent) and
+verify again. Briefly tell the user what the hook does; there is nothing for
+them to configure.
+
+### 3. Email
 
 Ask which email provider the user relies on:
 
@@ -86,7 +105,7 @@ Ask which email provider the user relies on:
 - **Other providers**: note the preference and skip rather than installing
   anything unofficial.
 
-### 3. Meeting notes
+### 4. Meeting notes
 
 Ask whether the user records meetings and with what:
 
@@ -96,7 +115,7 @@ Ask whether the user records meetings and with what:
   OAuth/session state and generated code stay local.
 - Other note-taking services: skip unless an official CLI exists.
 
-### 4. Shared documents (Notion or Google Drive)
+### 5. Shared documents (Notion or Google Drive)
 
 Ask where the user's shared documents live:
 
@@ -108,7 +127,7 @@ Ask where the user's shared documents live:
   [Google Workspace CLI](https://github.com/googleworkspace/cli) (`gws`).
 - Both is fine — set up each one the user wants.
 
-### 5. Calendar management
+### 6. Calendar management
 
 Ask what calendar the user keeps:
 
@@ -117,7 +136,7 @@ Ask what calendar the user keeps:
   reuse the auth from the shared-documents step if already done.
 - Other calendars: skip unless an official CLI exists.
 
-### 6. Personal communication (optional)
+### 7. Personal communication (optional)
 
 This category is optional — ask whether the user wants agents to be able to
 read and (with approval) send personal messages:
@@ -131,7 +150,7 @@ read and (with approval) send personal messages:
   sending behind approved contacts and explicit approval.
 - The user can choose either, both, or neither.
 
-### 7. Screen sharing / computer control
+### 8. Screen sharing / computer control
 
 Set up desktop computer use last, and only when the user is physically at the
 Mac: macOS requires them to grant Screen Recording and Accessibility
