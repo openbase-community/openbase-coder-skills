@@ -169,6 +169,12 @@ Common failures and their actual causes:
   trees take many minutes) or working through a large `needBytes` backlog.
   Slow-but-moving is healthy; investigate only if `needTotalItems` is
   frozen across several minutes, then read the top of its need list.
+- **Peer shows connected on one side only, or dials fail repeatedly with
+  "Failed to exchange Hello messages … EOF"** — usually a half-open zombie
+  connection: one side still believes an earlier connection (to a process
+  that has since restarted) is alive and silently drops new dials as
+  duplicates. Restart the Syncthing instance on the side that logs nothing
+  during the other side's dial attempts.
 - **A repo shows the same changes as dirty on both machines** — correct
   behavior, not a bug: working files synced while each machine keeps its
   own `.git`. Commits made on one machine propagate via the reconciler
