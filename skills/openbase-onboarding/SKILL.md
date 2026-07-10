@@ -3,11 +3,12 @@ name: openbase-onboarding
 description: >-
   Use this skill when onboarding a user to Openbase Coder: setting up
   recommended integrations for email, meeting notes, shared documents,
-  calendar, personal messaging, screen sharing/computer control, and the
-  GitHub CLI. Trigger this skill when a message notes that onboarding has
-  not been read yet, or when the user asks to set up integrations or
-  redo onboarding.
-version: 0.2.0
+  calendar, personal messaging, screen sharing/computer control, the
+  GitHub CLI, and finally locked-down mode with a voice safe phrase.
+  Trigger this skill when a message notes that onboarding has not been
+  read yet, or when the user asks to set up integrations or redo
+  onboarding.
+version: 0.3.0
 ---
 
 # Openbase Onboarding
@@ -164,8 +165,35 @@ permissions in System Settings, which cannot be done remotely.
 - After permissions are granted, offer a quick test (e.g. take a screenshot
   or start and stop a screen share).
 
+### 9. Locked-down mode (final step)
+
+Finish onboarding by offering to enable locked-down mode. Explain it in one
+or two spoken sentences: with locked-down mode on, coding agents launched
+from a call run gated — they ask for approval before running commands and
+stay in a workspace-limited sandbox — unless the user says their safe phrase
+during the call, which unlocks full-access launches for that session only.
+Only the user's own spoken words can unlock it; nothing an agent says or
+writes counts.
+
+If the user agrees:
+
+1. Ask them to choose a safe phrase — a short phrase they would never say by
+   accident (matching ignores casing and punctuation). Repeat it back to
+   confirm you heard it correctly.
+2. Enable it:
+
+   ```bash
+   openbase-coder lockdown enable --safe-phrase "<their phrase>"
+   ```
+
+3. Confirm with `openbase-coder lockdown status` and tell the user it is on,
+   reminding them of the phrase one last time.
+
+If they decline, note that they can enable it later by asking for locked-down
+mode or running `openbase-coder lockdown enable`.
+
 ## Wrapping up
 
 Summarize what was set up, what was skipped, and anything left unfinished
-(for example computer-use permissions). Remind the user they can resume
-anytime by asking for onboarding.
+(for example computer-use permissions or locked-down mode). Remind the user
+they can resume anytime by asking for onboarding.
