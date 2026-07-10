@@ -15,6 +15,7 @@ npx skills add openbase-community/openbase-coder-skills --skill ios-app-control
 npx skills add openbase-community/openbase-coder-skills --skill openbase-coder-reports
 npx skills add openbase-community/openbase-coder-skills --skill openbase-super-agent-dispatcher
 npx skills add openbase-community/openbase-coder-skills --skill openbase-product-knowledge
+npx skills add openbase-community/openbase-coder-skills --skill openbase-file-sync
 ```
 
 ## Openbase Codex Auto-Link
@@ -39,3 +40,4 @@ Optional flags:
 - `openbase-super-agent-dispatcher` - Dispatch, continue, steer, transfer, and manage Openbase Super Agents from a dispatcher or another Super Agent.
 - `openbase-coder-reports` - Write, discover, read, tag, and query Openbase Coder reports, including Super Agent provenance front matter.
 - `openbase-product-knowledge` - Answer questions about the Openbase Coder product (desktop app, iOS app, web console, Openbase Cloud) by routing to the correct page of the product docs at `cli/docs/` / docs.openbase.cloud.
+- `openbase-file-sync` - Set up and diagnose file sync between a user's machines with Openbase Coder code sync or Syncthing: SSH key access between devices, tailnet-only transport, sync conflicts, and keeping `.git` out of file sync.
