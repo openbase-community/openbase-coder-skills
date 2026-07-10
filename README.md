@@ -36,6 +36,7 @@ Optional flags:
 - `openbase-coder-routines` - Use `openbase-coder routines ...`, the Routines console page, and the local routines API while keeping routine operations out of the Super Agents MCP tool surface.
 - `openbase-computer-use` - Route visible desktop control to the right path: native Computer Use tools on macOS, and the Openbase Coder Linux CLI on DevSpace Xorg/DCV desktops.
 - `ios-app-control` - Control the foreground Openbase iOS app by opening a URL or deep link, muting or unmuting the active call, switching to the debug LiveKit voice test call, or switching back to the regular developer call.
+- `openbase-user-notify` - Reach the user out of band: speak in the active call, send a deep-linked push notification to their iPhone, or ring their phone with an inbound call, using `openbase-coder user say / notify / call`.
 - `openbase-super-agent-dispatcher` - Dispatch, continue, steer, transfer, and manage Openbase Super Agents from a dispatcher or another Super Agent.
 - `openbase-coder-reports` - Write, discover, read, tag, and query Openbase Coder reports, including Super Agent provenance front matter.
 - `openbase-product-knowledge` - Answer questions about the Openbase Coder product (desktop app, iOS app, web console, Openbase Cloud) by routing to the correct page of the product docs at `cli/docs/` / docs.openbase.cloud.
