@@ -7,7 +7,7 @@ description: >-
   GitHub CLI. Trigger this skill when a message notes that onboarding has
   not been read yet, or when the user asks to set up integrations or
   redo onboarding.
-version: 0.2.0
+version: 0.3.0
 ---
 
 # Openbase Onboarding
@@ -80,7 +80,10 @@ and their preferred auth method.
 (`~/.openbase/hooks/inject-session-id.sh`) into both Openbase agent homes so
 every agent knows its own thread/session ID and stamps commits with an
 `Agent-Thread-Id` trailer that ties each commit back to the session that
-produced it. No user choice is needed here — just verify it is in place:
+produced it. The hook injects the usage instructions along with the ID, so no
+`AGENTS.md` rule is needed for the normal case — the instructions ship,
+update, and uninstall with the hook, and only appear in sessions where the ID
+actually exists. No user choice is needed here — just verify it is in place:
 
 ```bash
 test -x ~/.openbase/hooks/inject-session-id.sh \
@@ -92,6 +95,23 @@ test -x ~/.openbase/hooks/inject-session-id.sh \
 If anything is missing, re-run `openbase-coder setup` (it is idempotent) and
 verify again. Briefly tell the user what the hook does; there is nothing for
 them to configure.
+
+One case the hook cannot cover is a session where it did not fire (for
+example after an uninstall, or in an environment without the hook), since a
+hook that never ran cannot inject its own fallback rule. Offer to add this
+single fallback line to the Openbase agent-home instructions, and add it if
+the user agrees:
+
+```markdown
+- If no agent thread/session ID is present in your session context, do not
+  guess one or reuse an ID from elsewhere; tell the user the session ID was
+  unavailable before committing without the `Agent-Thread-Id` trailer.
+```
+
+The files are `~/.openbase/codex_home/AGENTS.md` and
+`~/.openbase/claude_config/CLAUDE.md`. If one is a symlink to the other
+(check with `ls -la`), edit only the real file; otherwise add the same line
+to both.
 
 ### 3. Email
 
