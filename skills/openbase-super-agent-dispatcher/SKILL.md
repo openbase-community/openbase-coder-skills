@@ -86,6 +86,23 @@ finish unless the user explicitly asks you to wait.
 Do not assume that threads or Super Agents are still running without checking
 unless you just launched them.
 
+## Task Ownership And Replacement
+
+- Treat missing, incomplete, or stale-looking active-turn status as UNKNOWN,
+  not proof that the current owner is inactive or dead.
+- For any retry, replacement, or second agent targeting the same task,
+  workspace, or working directory, preserve single ownership until you have
+  confirmed that the prior owner is terminal, explicitly cancelled or
+  superseded it, or established staleness with a reliable threshold.
+- When uncertain, inspect recent thread/session activity and workspace changes
+  before spawning another Super Agent. Check for recent turn output, pending
+  tool activity, dirty files, commits, logs, or other signs that the owner is
+  still progressing.
+- If you start a replacement, treat all older owners for that same task as
+  superseded. Do not give superseded owners duplicate user-facing completion
+  instructions; cancel or steer them to stop and suppress completion
+  announcements when the tools allow it.
+
 ## Continuing And Steering
 
 - When sending work to an actively working Super Agents thread, prefer queuing a
