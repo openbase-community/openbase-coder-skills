@@ -24,16 +24,17 @@ Use this skill when:
 
 ## Core Model
 
-- Routines are an Openbase Coder/Super Agents wrapper concept, not a native
-  Codex app-server concept.
+- Routines are an Openbase Coder product concept, not a native Codex app-server
+  or Super Agents concept.
 - Routines have two first-class kinds:
   - `agent` routines start or queue a Codex app-server/Super Agents turn.
   - `command` routines run a normal local shell command and do not launch an AI
     agent by themselves.
 - Codex app-server owns threads and turns. Only `agent` routine execution calls
   the same app-server `turn/start` path used by normal Super Agents turns.
-- Routine state is persisted in the local Super Agents state file through
-  `super_agents.app_server_client.CodexAppServerClient`.
+- Routine state is persisted in `~/.openbase/routines.json` and owned by the
+  Openbase Coder CLI. Super Agents supplies generic turn execution primitives;
+  it does not own routine scheduling or state.
 - Routine control should be exposed through `openbase-coder routines ...`, the
   local console API, and the Routines console page.
 - Do not add `super_agents_create_routine`, `super_agents_list_routines`,
@@ -95,7 +96,7 @@ handoff context, but the command is the routine start action:
 ```bash
 openbase-coder routines create open-pr-review-routine \
   --kind command \
-  --command "super-agents-open-pr-review-discover --workspace /path/to/openbase-coder-workspace --launch-reviews --model gpt-5.5 --reasoning-effort high --service-tier standard" \
+  --command "openbase-coder-open-pr-review-discover --workspace /path/to/openbase-coder-workspace --launch-reviews --model gpt-5.5 --reasoning-effort high --service-tier standard" \
   --interval-seconds 300 \
   --cwd /path/to/openbase-coder-workspace
 ```
@@ -115,7 +116,7 @@ bundle, with the already-computed PR material and a scoped prompt for the
 reviewing agent. A later agent/deep-review step should consume these bounded
 requests rather than rediscovering repos, PRs, or linkage.
 
-When `super-agents-open-pr-review-discover` runs with `--launch-reviews`, it
+When `openbase-coder-open-pr-review-discover` runs with `--launch-reviews`, it
 must use the Super Agents Python client/library to start or queue one review
 turn per grouped bundle. Do not shell out to `openbase-coder` for the handoff.
 The review turns are intentionally high-reasoning even though discovery is
