@@ -76,12 +76,17 @@ openbase-coder user say "<agent name>" "Hey there, I'm <agent name>."
 
 Use the same `agentName` passed to the Super Agents MCP call.
 
-## After Starting
+## After Starting Or Assigning
 
-After starting a Super Agents turn, immediately tell the user that the agent has
-started and briefly summarize what the agent is doing. Do not ask when the user
-wants progress checked; the user will ask. Do not silently wait for the turn to
-finish unless the user explicitly asks you to wait.
+After starting or assigning a Super Agents turn, treat the handoff as
+asynchronous by default. Immediately tell the user who is working on it and
+briefly summarize what that agent is doing, then return control to the user. Do
+not ask when the user wants progress checked; the user will ask.
+
+Do not wait for the turn to finish, watch it, poll it, or repeatedly check for
+completion unless the user explicitly asks you to wait, poll, watch, or check
+completion. Polling repeatedly after handoff is wrong unless explicitly
+requested.
 
 Do not assume that threads or Super Agents are still running without checking
 unless you just launched them.
