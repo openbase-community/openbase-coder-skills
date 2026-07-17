@@ -1,8 +1,14 @@
-# Openbase Computer Use — Linux
+# Openbase Computer Use — Linux (Codex and other non-Claude agents)
 
 On Linux Openbase DevSpace desktops, use the `openbase-coder computer-use` CLI
 commands to perform desktop control. The native `mcp__computer-use__*` MCP
 tools are macOS-only and are not available in Linux environments.
+
+Claude Code sessions started by Openbase Coder are the exception: when
+`mcp__openbase-computer-use__*` tools are available, follow
+[openbase-claude.md](openbase-claude.md) instead of this CLI path — the same
+Linux companion serves those tools directly. Chrome control is not available
+on Linux for any agent.
 
 ## CLI commands
 

@@ -66,6 +66,10 @@ Use this path when:
 Do not use this path for ordinary shell automation, browser automation, or
 repo edits that do not require operating the user's visible desktop.
 
+Chrome control is not supported from Codex agents on any OS. If the user asks
+for browser control, explain it is available only on the Claude Code backend
+on macOS (see the support matrix in [SKILL.md](SKILL.md)).
+
 ## Safety Rules
 
 - Computer control must happen only while screen sharing is active, and through
