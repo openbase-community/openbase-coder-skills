@@ -14,6 +14,13 @@ openbase-coder computer-use status   # check session status
 openbase-coder computer-use interrupt  # stop the current action
 ```
 
+For manual iOS remote control (no AI run), share the screen with:
+
+```bash
+openbase-coder computer-use screen-share start  # share this desktop to iOS
+openbase-coder computer-use screen-share stop   # stop sharing
+```
+
 Refer to the CLI implementation at `cli/openbase_coder_cli/cli/computer_use.py`
 for the full command reference and options.
 
@@ -30,6 +37,10 @@ for the full command reference and options.
   NICE DCV.
 - The CLI expects X11 tooling (`xdotool`, `scrot` or `gnome-screenshot`, and
   ImageMagick). Arbitrary Wayland desktops are not supported by this path.
+- The companion auto-detects the user's X display (on DevSpaces the DCV
+  session may be `:1` while GDM's greeter holds `:0`). If detection picks the
+  wrong display, set `OPENBASE_COMPUTER_USE_DISPLAY` explicitly and check
+  `openbase-coder computer-use status`.
 
 ## Safety Rules
 

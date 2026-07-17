@@ -4,7 +4,7 @@ description: >-
   Use this skill when an agent needs to operate the user's visible desktop
   through Computer Use tools. Routes to the correct path based on agent
   environment and operating system.
-version: 0.2.0
+version: 0.3.0
 ---
 
 # Openbase Computer Use
@@ -34,16 +34,21 @@ Determine your environment and follow the corresponding sub-file:
 ## Manual iOS Remote Control Screen Share
 
 Use this when the user wants to control a desktop manually from the Openbase iOS
-app. Start the desktop screen share:
+app. The command depends on the host OS.
+
+On macOS (drives the Electron desktop app's companion):
 
 ```
 openbase-coder desktop screen-share start
-```
-
-Stop the desktop screen share:
-
-```
 openbase-coder desktop screen-share stop
+```
+
+On Linux (drives the DevSpace desktop's Linux companion; the `desktop
+screen-share` command is macOS-only and will refuse to run):
+
+```
+openbase-coder computer-use screen-share start
+openbase-coder computer-use screen-share stop
 ```
 
 After the screen-share tile appears in iOS, the user opens it full screen and
