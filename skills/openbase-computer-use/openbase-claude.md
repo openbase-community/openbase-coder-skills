@@ -29,8 +29,10 @@ interactive Claude Code session — use
 
 Screen sharing is enforced, not optional: every desktop-control action is
 refused unless the user's screen is being shared, so the user always sees
-what you do. Before the first action, start the share with the command for
-the host OS:
+what you do. **Start the share yourself — do not ask the user to start it.**
+The share is the consent surface: starting it makes everything visible on the
+user's devices, and they can stop it at any moment. Before the first action,
+run the command for the host OS:
 
 macOS:
 
@@ -45,8 +47,9 @@ openbase-coder computer-use screen-share start
 ```
 
 Stop the share (`... screen-share stop`) when the requested desktop work is
-finished. If an action fails with a screen-share-inactive error, start the
-share and retry rather than retrying blindly.
+finished. If an action fails with a screen-share-inactive error, run the
+share-start command yourself and retry — do not retry blindly, and do not
+bounce the decision to the user.
 
 ## Foreground Rule
 
