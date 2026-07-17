@@ -10,6 +10,14 @@ Use this path when you have `mcp__openbase-computer-use__*` tools available.
 If you have the native `mcp__computer-use__*` tools, use
 [claude-code-macos.md](claude-code-macos.md) instead.
 
+## Browser work
+
+If the Chrome plugin is enabled for the Claude Code backend (console →
+Settings → Coding backend → Chrome), sessions also get the native
+`mcp__claude-in-chrome__*` browser tools. Prefer those for anything inside a
+web page — clicking, forms, reading page content — and reserve the
+`mcp__openbase-computer-use__*` tools for native apps and OS-level work.
+
 ## Requirements
 
 - The Openbase Coder desktop app must be running. If tool calls report that
