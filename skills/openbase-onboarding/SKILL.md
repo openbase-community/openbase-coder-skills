@@ -118,7 +118,7 @@ to both.
 Ask which email provider the user relies on:
 
 - **Gmail** (officially supported): install the
-  [gmail-cli-skill](https://github.com/montaguegabe/gmail-cli-skill) into
+  [gmail-cli-skill](https://github.com/openbase-community/gmail-cli-skill) into
   `~/.agents/skills`. It is a narrow CLI that enforces minimum OAuth scopes
   and gates sending behind explicit approval. Follow its README/SKILL.md for
   OAuth setup.
@@ -130,7 +130,7 @@ Ask which email provider the user relies on:
 Ask whether the user records meetings and with what:
 
 - **Fathom** (officially supported): install the
-  [fathom-skill](https://github.com/montaguegabe/fathom-skill), an
+  [fathom-skill](https://github.com/openbase-community/fathom-skill), an
   mcporter-generated CLI wrapper around the upstream Fathom MCP server —
   OAuth/session state and generated code stay local.
 - Other note-taking services: skip unless an official CLI exists.
@@ -162,11 +162,11 @@ This category is optional — ask whether the user wants agents to be able to
 read and (with approval) send personal messages:
 
 - **iMessage** (officially supported, macOS only): install the
-  [imessage-skill](https://github.com/montaguegabe/imessage-skill). It needs
+  [imessage-skill](https://github.com/openbase-community/imessage-skill). It needs
   Full Disk Access for the host terminal/agent process, which the user must
   grant in System Settings; it limits message text to approved conversations.
 - **WhatsApp** (officially supported): install the
-  [whatsapp-skill](https://github.com/montaguegabe/whatsapp-skill). It keeps
+  [whatsapp-skill](https://github.com/openbase-community/whatsapp-skill). It keeps
   sending behind approved contacts and explicit approval.
 - The user can choose either, both, or neither.
 
