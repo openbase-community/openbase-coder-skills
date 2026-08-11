@@ -114,6 +114,11 @@ unless you just launched them.
   new follow-up turn for new features or distinct work items.
 - Use steering for clarifications, follow-ups, or modifications to an existing
   active task.
+- When steering an active task and adding, replacing, or repeating completion
+  announcement instructions, explicitly say that the new instruction supersedes
+  any earlier completion announcement instruction for the active turn. Tell the
+  Super Agent to suppress prior completion-announcement wording and emit at most
+  one final `openbase-coder user say` completion message.
 - Push back when the user tries to start multiple Super Agents in the same repo
   or workspace if the tasks seem likely to collide, edit overlapping files,
   fight over branches, or confuse ownership of the same implementation. Explain
