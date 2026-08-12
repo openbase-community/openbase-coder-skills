@@ -93,46 +93,19 @@ Command routines use `--kind command` and `--command`. They may keep a prompt as
 handoff context, but the command is the routine start action:
 
 ```bash
-openbase-coder routines create open-pr-review-routine \
+openbase-coder routines create workspace-report-routine \
   --kind command \
-  --command "super-agents-open-pr-review-discover --workspace /path/to/openbase-coder-workspace --launch-reviews --model gpt-5.5 --reasoning-effort high --service-tier standard" \
+  --command "generate-workspace-report --workspace /path/to/workspace" \
   --interval-seconds 300 \
-  --cwd /path/to/openbase-coder-workspace
+  --cwd /path/to/workspace
 ```
 
-For the open PR review routine, the command/code step must enumerate all PRs
-that meet the review criteria before any AI starts. Its output should be the
-precise eligible PR list and material state (`repo`, `number`, `url`, head/base
-SHAs, repo path, review key), while already reviewed, duplicate, unchanged, or
-unavailable PRs are excluded or summarized cheaply.
-
-The same command layer must also deterministically group linked PRs into review
-bundles before any agent starts. Use conservative signals such as shared feature
-or stack labels, shared normalized branch topics, same-author exact title/topic
-matches, workspace stack relationships, and cross-repo onboarding feature
-naming. The output should include one `reviewRequests[]` entry per grouped
-bundle, with the already-computed PR material and a scoped prompt for the
-reviewing agent. A later agent/deep-review step should consume these bounded
-requests rather than rediscovering repos, PRs, or linkage.
-
-When `super-agents-open-pr-review-discover` runs with `--launch-reviews`, it
-must use the Super Agents Python client/library to start or queue one review
-turn per grouped bundle. Do not shell out to `openbase-coder` for the handoff.
-The review turns are intentionally high-reasoning even though discovery is
-cheap and deterministic. The explicit default handoff config is:
-
-```text
-model: gpt-5.5
-reasoningEffort: high
-serviceTier: standard
-mode: default
-approvalPolicy: never
-sandboxType: dangerFullAccess
-```
-
-The scoped prompt for each review turn must include the already-computed bundle
-payload and safety constraints: no public comments, no approvals or requested
-changes, no merging, no pushing, no deploying, and no publishing.
+When a command routine feeds a later agent step, keep discovery deterministic:
+the command should enumerate and bound the work items itself (emitting a
+precise list or JSON payload), so the agent consumes bounded requests instead
+of rediscovering state. If the command hands off turns programmatically, it
+should use the Super Agents Python client/library rather than shelling out to
+`openbase-coder`.
 
 ## Console And API
 
@@ -165,7 +138,7 @@ super-agents/src/super_agents/app_server_client.py
 super-agents/src/super_agents/state.py
 super-agents/src/super_agents/mcp_server.py
 cli/openbase_coder_cli/cli/routines.py
-cli/openbase_coder_cli/mcp/session_manager.py
+cli/openbase_coder_cli/thread_sync/session_manager.py
 cli/openbase_coder_cli/openbase_coder_cli_app/views.py
 cli/openbase_coder_cli/openbase_coder_cli_app/urls.py
 coder-react/src/pages/Routines.tsx
@@ -202,7 +175,7 @@ uv run ruff check src/super_agents/mcp_server.py tests/test_app_server_client.py
 
 cd ../cli
 uv run pytest tests/test_session_manager.py tests/test_routines_cli.py
-uv run ruff check openbase_coder_cli/cli/routines.py openbase_coder_cli/mcp/session_manager.py openbase_coder_cli/openbase_coder_cli_app/views.py openbase_coder_cli/openbase_coder_cli_app/urls.py tests/test_session_manager.py tests/test_routines_cli.py
+uv run ruff check openbase_coder_cli/cli/routines.py openbase_coder_cli/thread_sync/session_manager.py openbase_coder_cli/openbase_coder_cli_app/views.py openbase_coder_cli/openbase_coder_cli_app/urls.py tests/test_session_manager.py tests/test_routines_cli.py
 
 cd ../console
 pnpm exec tsc -p tsconfig.json --noEmit
