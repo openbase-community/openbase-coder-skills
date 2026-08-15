@@ -83,7 +83,9 @@ Start pages:
 
 By topic:
 
-- Installing / first-time setup → `docs/getting-started.md`, and
+- Installing / first-time setup → `docs/getting-started/index.md`, with
+  `docs/getting-started/mac-app.md` (desktop app download path) and
+  `docs/getting-started/developer-setup.md` (source/workspace path), and
   `docs/manual-installation.md` for the terminal-driven desktop setup
 - Download links (Mac, iOS, Android, CLI) → `docs/downloads.md`
 - Voice call routing, transferring to Super Agents, speaking announcements
