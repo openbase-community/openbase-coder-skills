@@ -2,8 +2,9 @@
 name: openbase-product-knowledge
 description: >-
   Use this skill when answering questions about the Openbase Coder product:
-  what it is, what the desktop app, iOS app, web console, or Openbase Cloud
-  can do, how the pieces connect, or where a feature or setting lives. Routes
+  what it is, what the desktop app, iOS app, Android app, web console, or
+  Openbase Cloud can do, how the pieces connect, or where a feature or setting
+  lives. Routes
   the agent to the correct page of the product documentation instead of
   guessing from code.
 version: 0.1.0
@@ -21,8 +22,8 @@ answer from the docs rather than from memory or ad hoc code reading.
 Use this skill when:
 
 - the user asks what Openbase Coder is or what it can do
-- the question is about the Mac desktop app, the iOS app, the web console,
-  or app.openbase.cloud ("can I do X from my phone?", "where do I change
+- the question is about the Mac desktop app, the iOS app, the Android app,
+  the web console, or app.openbase.cloud ("can I do X from my phone?", "where do I change
   the voice?", "how do I approve an agent request?")
 - the question is about setup, pairing an iPhone, Tailscale, voice calls,
   updating, uninstalling, or troubleshooting connectivity
@@ -58,6 +59,10 @@ One local runtime, several faces:
 - **iOS app** — voice calls with the dispatcher and Super Agents, threads,
   approvals, reports, diffs, and phone-side settings, connected to the Mac
   over Tailscale (or to a Cloud DevSpace).
+- **Android app** — the same phone client for Android (Kotlin/Jetpack
+  Compose), mirroring the iOS workflow: voice calls, threads, approvals,
+  reports, diffs, sync-conflict resolution, and screen-share viewing,
+  connected to the Mac or a Cloud DevSpace over Tailscale.
 - **Web console** — the same dashboard served by the local runtime in any
   browser; also embedded by the desktop and iOS apps.
 - **app.openbase.cloud** — the Openbase Cloud account: sign-in/OAuth, device
@@ -66,9 +71,9 @@ One local runtime, several faces:
 - **`openbase-coder` CLI** — the local Django API + WebSocket server,
   LiveKit voice services, and service management underneath everything.
 
-Focus answers on what the user actually sees — the desktop app and iOS app
-first, then the console and cloud — and mention the CLI only as the
-underlying mechanism or for terminal-preferring users.
+Focus answers on what the user actually sees — the desktop app and the
+iOS/Android apps first, then the console and cloud — and mention the CLI only
+as the underlying mechanism or for terminal-preferring users.
 
 ## Docs Routing
 
@@ -87,6 +92,8 @@ By topic:
   `docs/getting-started/mac-app.md` (desktop app download path) and
   `docs/getting-started/developer-setup.md` (source/workspace path), and
   `docs/manual-installation.md` for the terminal-driven desktop setup
+- Running in a container, or running on Windows → `docs/docker.md`
+  (the `openbaseai/openbase` Docker image; Docker Desktop is the Windows path)
 - Download links (Mac, iOS, Android, CLI) → `docs/downloads.md`
 - Voice call routing, transferring to Super Agents, speaking announcements
   → `docs/voice-routing.md`
