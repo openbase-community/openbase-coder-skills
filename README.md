@@ -16,6 +16,7 @@ npx skills add openbase-community/openbase-coder-skills --skill openbase-coder-r
 npx skills add openbase-community/openbase-coder-skills --skill openbase-super-agent-dispatcher
 npx skills add openbase-community/openbase-coder-skills --skill openbase-product-knowledge
 npx skills add openbase-community/openbase-coder-skills --skill openbase-file-sync
+npx skills add openbase-community/openbase-coder-skills --skill responding-to-voice-tag
 ```
 
 ## Openbase Codex Auto-Link
@@ -41,3 +42,4 @@ Optional flags:
 - `openbase-coder-reports` - Write, discover, read, tag, and query Openbase Coder reports, including Super Agent provenance front matter.
 - `openbase-product-knowledge` - Answer questions about the Openbase Coder product (desktop app, iOS app, Android app, web console, Openbase Cloud) by routing to the correct page of the product docs at `cli/docs/` / docs.openbase.cloud.
 - `openbase-file-sync` - Set up and diagnose file sync between a user's machines with Openbase Coder code sync or Syncthing: SSH key access between devices, tailnet-only transport, sync conflicts, and keeping `.git` out of file sync.
+- `responding-to-voice-tag` - Treat every `<voice>`-wrapped turn as live speech whose final response will be read aloud, and consistently produce concise TTS-friendly answers.
