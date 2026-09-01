@@ -92,8 +92,10 @@ By topic:
   `docs/getting-started/mac-app.md` (desktop app download path) and
   `docs/getting-started/developer-setup.md` (source/workspace path), and
   `docs/manual-installation.md` for the terminal-driven desktop setup
-- Running in a container, or running on Windows → `docs/docker.md`
-  (the `openbaseai/openbase` Docker image; Docker Desktop is the Windows path)
+- Running in a container → `docs/docker.md` (the `openbaseai/openbase` Docker
+  image). On Windows, native `./scripts/setup` is the supported path (beta,
+  per GLOSSARY pathway 5) and the Docker image is the most battle-tested
+  option — see `docs/getting-started/developer-setup.md`
 - Download links (Mac, iOS, Android, CLI) → `docs/downloads.md`
 - Voice call routing, transferring to Super Agents, speaking announcements
   → `docs/voice-routing.md`
