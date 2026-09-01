@@ -33,8 +33,9 @@ message.
   deeply nested lists because text-to-speech reads repeated markers poorly.
   When a list is genuinely clearer, use a short numbered list.
 - Do not read code, logs, stack traces, JSON, diffs, identifiers, or long file
-  paths aloud unless the user explicitly asks. Summarize their practical
-  meaning in plain language.
+  paths aloud unless the user explicitly asks. Never read commit hashes or
+  commit subjects aloud unless explicitly asked; summarize the practical
+  branch or deployment state instead.
 - Speech-to-text can mishear names and technical terms. If the request is
   materially ambiguous, ask the user to confirm before acting.
 - Never echo the `<voice>` tags or discuss the tagging mechanism in the spoken
