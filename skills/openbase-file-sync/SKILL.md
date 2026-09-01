@@ -51,45 +51,29 @@ Use this skill when:
 
 `openbase-coder sync` manages an isolated Syncthing instance end to end and
 is the right answer for new setups (the user-managed path below is for
-diagnosing setups the user built themselves).
+diagnosing setups the user built themselves). Don't restate the product docs
+here — route to them:
 
-- `openbase-coder sync enable` — installs a pinned Syncthing (checksum
-  verified), renders config, writes managed `.stignore` files, starts the
-  `code-sync` service. Requires two or more non-phone devices with
-  Tailscale registered to the account (`--force` overrides).
-- `openbase-coder sync add <path>` / `remove <path>` — folders are
-  identified by home-relative path, so every device mounts the same folder
-  at `$HOME/<relpath>`. Only paths under `~` are eligible; `~/.openbase`
-  never syncs.
-- `openbase-coder sync status` / `conflicts` / `resolve <id>
-  --action keep_local|use_remote` — sync health and conflict handling.
-- `openbase-coder sync reconcile` — one git-state reconcile pass (also runs
-  automatically every minute via the routines service): fast-forwards a
-  branch only when the peer's commit tree already matches the local working
-  tree and the local head is an ancestor; anything diverged becomes a
-  conflict record instead.
-- `openbase-coder doctor` — includes code-sync checks (managed ignores
-  intact, service running, version history size) and warns if a
-  user-managed Syncthing is running without a `.git` ignore.
+- **Command surface** — `enable`, `add`/`remove`, `status`, `conflicts`,
+  `resolve <id> --keep-local|--use-remote`, `reconcile` — is owned by the
+  `sync` command reference (`cli/docs/commands/sync.md`).
+- **Durable behavior** — what syncs vs. never syncs, the git-state
+  reconciler, the write lease, staggered versioning, eligibility, and
+  conflict handling — is owned by *Sync Between Your Computers*
+  (`cli/docs/code-sync.md`). Its Troubleshooting section covers the disk-stall
+  failure and the reconcile heartbeat.
 
-Facts that matter when debugging it:
+Operational facts you need to debug the **managed** instance (not in the user
+docs):
 
-- Managed instance: config at `~/.openbase/code-sync/`, REST GUI on
-  `127.0.0.1:8385` (API key in `config.xml` there) — deliberately not the
-  user-managed default 8384.
-- Transport is pinned to `tcp://<peer-tailscale-magicdns>:22000` with
-  global/local discovery, relays, and NAT traversal all disabled — traffic
-  cannot leave the tailnet.
-- File versioning (staggered, 30-day) is on for every managed folder;
-  versions live under `~/.openbase/sync-versions/<folder-id>/`. This is the
-  undo net for uncommitted work — check it before declaring data lost.
-- Write lease: the device with recent voice/agent activity stays
-  send-receive; idle peers flip receive-only. For deliberate simultaneous
-  work on both machines set `lease_mode: manual` via `PUT
-  /api/sync/settings/`.
+- Config at `~/.openbase/code-sync/`; REST GUI on `127.0.0.1:8385` (API key in
+  that `config.xml`) — deliberately not the user-managed default 8384.
+- Version history (the undo net for uncommitted work) lives under
+  `~/.openbase/sync-versions/<folder-id>/`; check it before declaring data
+  lost.
 - Conflict records (branch divergences and `*.sync-conflict-*` files) are
-  at `GET /api/sync/conflicts/`, resolvable via the console/iOS Sync pages
-  or the CLI.
+  exposed at `GET /api/sync/conflicts/`, resolvable from the console/iOS Sync
+  pages or the CLI.
 
 ## Device Access Setup (walk the user through this)
 
