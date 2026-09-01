@@ -35,6 +35,22 @@ If the report does not pertain to a project, write it under
 `~/.openbase/codex_home/.reports/`. Images or PDFs may also be used instead of
 Markdown if requested by the user.
 
+Reports are operational artifacts, not public source files. Before staging or
+committing a report, determine the repository's visibility with the hosting
+provider (for GitHub, use `gh repo view --json visibility`). In a public
+repository:
+
+- `.reports/` must remain ignored and untracked;
+- never use `git add -f`, an index API, or any equivalent bypass to stage it;
+- run `git ls-files -- .reports` and stop the commit if it prints any path;
+- if a report must be shared or versioned, move it to the relevant private
+  project workspace instead of committing it publicly.
+
+If reports are already tracked in a public repository, preserve the local files
+while removing them from the index with `git rm --cached`, then add a repository
+check that rejects future tracked `.reports/` files. Removing historical copies
+requires a separate, explicitly approved history rewrite.
+
 In reports and other Markdown, avoid tables with more than two or three columns
 because wide tables are hard to read on mobile.
 
@@ -158,6 +174,16 @@ coder-react/src/lib/useReportFileActions.ts
 ```
 
 ## Validation
+
+For a public repository, validate report privacy before any commit:
+
+```bash
+git check-ignore .reports/example.md
+test -z "$(git ls-files -- .reports)"
+```
+
+An ignore match is not enough by itself: `.gitignore` does not affect files
+that were force-added or are already tracked. The index check is mandatory.
 
 After changing reports behavior, run focused checks from the relevant subrepos:
 
