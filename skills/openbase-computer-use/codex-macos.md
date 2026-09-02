@@ -6,21 +6,11 @@ command to perform desktop control when tool-based Computer Use is available.
 
 ## Screen-Share Rule
 
-ALWAYS make sure screen sharing is active before starting any Computer Use
-workflow. Screen sharing wraps the whole desktop-control session: confirm it
-before the first Computer Use action, keep it active while work is in progress,
-and stop or release it after the requested work finishes.
+Require Openbase screen sharing only when the user is communicating through an active voice interface, indicated by `<voice>` tags. In an ordinary text session, use the attached Computer Use tools directly; do not require or start a LiveKit screen share.
 
-Because tool-based Computer Use does not go through the Openbase Coder CLI, the
-CLI will not automatically start, enforce, or stop screen sharing. The agent is
-responsible for confirming that the user's screen is being shared before any
-desktop-control action and for ending the screen-share flow when the work is
-complete.
+During an active `<voice>` session, screen sharing wraps the desktop-control workflow: confirm it before the first Computer Use action, keep it active while work is in progress, and stop or release it after the requested work finishes. Tool-based Computer Use does not automatically manage the Openbase Coder screen share, so the agent owns those checks in voice sessions.
 
-If screen sharing is not active or cannot be confirmed, do not click, type,
-scroll, drag, press keys, or set UI values with Computer Use. Ask the user to
-start screen sharing or use the available Openbase Coder screen-share mechanism
-first, then continue only after screen sharing is active.
+If screen sharing is unavailable during an active `<voice>` session, do not click, type, scroll, drag, press keys, or set UI values. Ask the user to start screen sharing or use the available Openbase Coder screen-share mechanism first. This restriction does not apply to ordinary text sessions.
 
 ## Foreground Rule
 
@@ -37,7 +27,7 @@ value change.
 
 Preferred pattern:
 
-1. Confirm screen sharing is active.
+1. If this is an active `<voice>` session, confirm screen sharing is active.
 2. Use the available Computer Use app-state/snapshot tool for the target app.
 3. If the target app is not visibly foregrounded, bring it to the foreground
    with the available app activation or OS focus mechanism.
@@ -72,9 +62,7 @@ on macOS (see the support matrix in [SKILL.md](SKILL.md)).
 
 ## Safety Rules
 
-- Computer control must happen only while screen sharing is active, and through
-  the available Computer Use tools, MCP tools, or visible OS interaction tools
-  in the current environment.
+- During an active `<voice>` session, computer control must happen only while screen sharing is active. In a text session, use the available Computer Use tools without starting a LiveKit screen share.
 - The user can stop at any time. If they say stop, abort, pause, interrupt, or
   indicate the control is doing the wrong thing, immediately stop taking desktop
   actions and report what was stopped.
@@ -90,7 +78,7 @@ on macOS (see the support matrix in [SKILL.md](SKILL.md)).
 ## Workflow
 
 1. Identify the target app and the exact visible outcome the user requested.
-2. Confirm screen sharing is active before doing anything else.
+2. If this is an active `<voice>` session, confirm screen sharing is active before doing anything else.
 3. Foreground the target app.
 4. Read the app state with the available Computer Use tool.
 5. Interact using the available Computer Use click, type, press-key, scroll,
@@ -100,7 +88,7 @@ on macOS (see the support matrix in [SKILL.md](SKILL.md)).
    interaction target changes from one app to another, foreground the new app
    first.
 7. Verify the requested outcome from visible app state before reporting done.
-8. End or release screen sharing after the requested Computer Use work finishes.
+8. If screen sharing was started for an active `<voice>` session, end or release it after the requested Computer Use work finishes.
 9. If behavior is unclear, inspect recent logs only when they are directly
    relevant. Limit log output because Openbase logs can be large.
 

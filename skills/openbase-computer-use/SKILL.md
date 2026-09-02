@@ -13,6 +13,8 @@ Computer use is intentionally visible. The user can stop the operation at any
 time. Treat any user request to stop, pause, abort, or interrupt as an immediate
 instruction to stop issuing further desktop actions.
 
+Openbase screen sharing is required only when the user is communicating through an active voice interface, indicated by `<voice>` tags. In ordinary text sessions, use the attached Computer Use tools directly and do not require or start an Openbase LiveKit screen share. The manual iOS remote-control workflow below still starts its own screen share because screen sharing is the feature being requested.
+
 ## What is supported where
 
 | Capability | Codex (macOS) | Codex (Linux DevSpace) | Claude Code via Openbase (macOS) | Claude Code via Openbase (Linux DevSpace) |
