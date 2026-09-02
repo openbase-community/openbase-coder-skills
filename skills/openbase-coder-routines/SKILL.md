@@ -59,6 +59,16 @@ openbase-coder routines run-due --name ROUTINE_NAME --force
 openbase-coder routines delete ROUTINE_NAME
 ```
 
+`openbase-coder loops ...` is an alias for the same command group and is the
+preferred spelling in user-facing guidance.
+
+Routines can also run on external events through webhook triggers
+(`add-webhook-trigger`, `remove-trigger`, `emit`, the
+`/api/routines/<name>/triggers/` endpoints, and the public
+`/api/hooks/t/<token>/` ingest endpoint). Use the `openbase-loops` skill for
+trigger creation, provider wiring, and the sender-allowlist security rules; do
+not expose trigger operations as Super Agents MCP tools either.
+
 Routine creation supports these fields where needed:
 
 ```bash
