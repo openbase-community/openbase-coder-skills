@@ -113,10 +113,10 @@ By topic:
 - Muted-call music / Brain Readiness score
   → `docs/plugins/brain-score-concurrency.md`
 
-Workspace-level guides (developer-facing, in `openbase-coder-workspace`):
+Workspace-level guides (developer-facing, in `openbase-coder-workspace/dev-docs/`):
 `DEV_RUNBOOK.md` (dev install/test flow), `AUTO_UPDATE.md` (release/update
-contracts), `GLOSSARY.md` (terminology), `specs/` (cross-repo feature
-specs). Prefer these over `cli/docs/` only for development and release
+contracts), `GLOSSARY.md` (terminology), `TROUBLESHOOTING.md` (agent-facing
+debugging). Prefer these over `cli/docs/` only for development and release
 questions.
 
 ## Answering Style
