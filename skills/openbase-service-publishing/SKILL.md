@@ -5,11 +5,10 @@ description: Use this skill when a user or agent needs to open, share, preview, 
 
 # Openbase Service Publishing
 
-Use Openbase's built-in private publication command for a local HTTP service.
-Prefer an explicit dedicated hostname when Openbase VPN advertises support:
+Use Openbase's built-in private publication command for a local HTTP service. A dedicated private hostname is the default:
 
 ```bash
-openbase-coder service publish <memorable-name> <local-port> --mode hostname
+openbase-coder service publish <memorable-name> <local-port>
 ```
 
 Do not tell a different device to open `localhost`; that name points back to
@@ -20,19 +19,15 @@ path and query unchanged to the service's root and never adds, strips, or
 rewrites a `/services/...` prefix. The command uses private Serve routing and
 never enables Funnel.
 
-Hostname mode is opt-in while it rolls out. It must fail closed unless both the
-Openbase Cloud DNS allocator and the signed local helper advertise the exact
-capability, and unless the allocated hostname resolves to this node. Do not
-invent a hostname or use a partially configured result. The compatibility
-fallback remains the existing dynamic/private-port command:
+Hostname mode must fail closed unless both the Openbase Cloud DNS allocator and signed local helper advertise the required capability and the allocated hostname resolves to this node. Do not invent a hostname or silently fall back after a capability error. If the user explicitly accepts a port-based URL, use:
 
 ```bash
-openbase-coder service publish <memorable-name> <local-port>
+openbase-coder service publish <memorable-name> <local-port> --mode dynamic
 ```
 
-That default preserves its existing URL and path behavior for current users.
-Use `--mode auto` only when the user explicitly accepts a hostname attempt with
-a safe fallback to the existing dynamic mode.
+Every mode serves at `/` and forwards incoming paths and queries unchanged. Dynamic mode prints `http://<node>:<private-port>/`, never `/<service>/`. There is no prefix stripping, prefix alias, shared `/services/<service>/` route, or app-specific redirect workaround. Do not change application base paths to accommodate publication. Use `--mode auto` only when the user explicitly accepts trying a hostname with a root-mounted port fallback. For an older installed CLI that still emits a service-name path, update the CLI before using it; do not restore prefix-based advice.
+
+Existing dynamic registry entries remain manageable. After upgrading, restart their gateways and use the root URL printed by `service list`; old prefixed bookmarks are not compatibility routes.
 
 Before publishing:
 
