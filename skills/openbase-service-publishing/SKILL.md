@@ -14,20 +14,16 @@ openbase-coder service publish <memorable-name> <local-port>
 Do not tell a different device to open `localhost`; that name points back to
 the device doing the browsing. Return the exact tailnet URL printed by the
 command. A hostname publication looks like
-`http://<service>.<node>.netmesh.openbase.cloud/`. It forwards the incoming
+`http://<service>.<account-namespace>.svc.netmesh.openbase.cloud/`. It forwards the incoming
 path and query unchanged to the service's root and never adds, strips, or
 rewrites a `/services/...` prefix. The command uses private Serve routing and
 never enables Funnel.
 
-Hostname mode must fail closed unless both the Openbase Cloud DNS allocator and signed local helper advertise the required capability and the allocated hostname resolves to this node. Do not invent a hostname or silently fall back after a capability error. If the user explicitly accepts a port-based URL, use:
+Publication must fail closed unless Cloud advertises account-private DNS, the signed helper advertises the current account-namespace routing contract, and the allocated name resolves exclusively to this node. Never publish service names through Headscale's shared extra-record list. The independent VPN-only DNS resolver must identify the querying peer and answer only its account's records.
 
-```bash
-openbase-coder service publish <memorable-name> <local-port> --mode dynamic
-```
+There is one supported publication mode. Do not use the retired `--mode`, `--tailnet-port`, dynamic-port fallback, or prefix-based modes. A missing capability requires updating/configuring the components, not inventing a URL or a workaround. Old registry entries are for cleanup only; remove them before upgrading the helper and republish on their root hostname.
 
-Every mode serves at `/` and forwards incoming paths and queries unchanged. Dynamic mode prints `http://<node>:<private-port>/`, never `/<service>/`. There is no prefix stripping, prefix alias, shared `/services/<service>/` route, or app-specific redirect workaround. Do not change application base paths to accommodate publication. Use `--mode auto` only when the user explicitly accepts trying a hostname with a root-mounted port fallback. For an older installed CLI that still emits a service-name path, update the CLI before using it; do not restore prefix-based advice.
-
-Existing dynamic registry entries remain manageable. After upgrading, restart their gateways and use the root URL printed by `service list`; old prefixed bookmarks are not compatibility routes.
+Namespaces belong to accounts, not devices. Service names are unique within an account. To move a service, unpublish it from its current device first; publishing the same name on another owned device retains its URL. The opaque namespace is a label, never an authorization credential.
 
 Before publishing:
 
@@ -41,10 +37,9 @@ answer. Never pass `--persist` on the user's behalf without explicit approval.
 For non-interactive work, omit the flag and explain that publication lasts for
 the current login session. A separately configured local app may also need its
 own launchd job; ask before making the app always-on as well as before making
-the publication always-on. Dynamic tailnet-facing ports must remain in the
-uncommon private range selected by the command. Hostname publication uses the
+the publication always-on. Hostname publication uses the
 signed helper's private HTTP route and keeps its local proxy on an uncommon
-loopback port. Neither mode may bind the app or proxy to `0.0.0.0`.
+loopback port. Neither the app nor proxy may bind to `0.0.0.0`.
 
 Useful commands:
 
@@ -64,6 +59,5 @@ database, UDP, or other independent ports.
 
 Dedicated per-service DNS names are an Openbase VPN control-plane capability,
 not a local naming trick. The authenticated owner-scoped Cloud API allocates
-the Headscale record; the signed helper installs only the matching hostname
-route. Official Tailscale, unknown providers, and Openbase Direct must reject
-hostname publication before changing local state.
+the owner-scoped private DNS record; the signed helper installs only the matching hostname
+route. Official Tailscale, unknown providers, and Openbase Direct must reject publication before changing local state.
