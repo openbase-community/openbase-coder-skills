@@ -14,7 +14,7 @@ openbase-coder service publish <memorable-name> <local-port>
 Do not tell a different device to open `localhost`; that name points back to
 the device doing the browsing. Return the exact tailnet URL printed by the
 command. A hostname publication looks like
-`http://<service>.<account-namespace>.svc.netmesh.openbase.cloud/`. It forwards the incoming
+`http://<service>.<account-namespace>.vpn.obs.so/`. It forwards the incoming
 path and query unchanged to the service's root and never adds, strips, or
 rewrites a `/services/...` prefix. The command uses private Serve routing and
 never enables Funnel.
