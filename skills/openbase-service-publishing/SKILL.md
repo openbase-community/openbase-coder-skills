@@ -14,7 +14,7 @@ openbase-coder service publish <memorable-name> <local-port>
 Do not tell a different device to open `localhost`; that name points back to
 the device doing the browsing. Return the exact tailnet URL printed by the
 command. A hostname publication looks like
-`http://<service>.<account-namespace>.vpn.obs.so/`. It forwards the incoming
+`https://<service>.<account-namespace>.vpn.obs.so/`. It forwards the incoming
 path and query unchanged to the service's root and never adds, strips, or
 rewrites a `/services/...` prefix. The command uses private Serve routing and
 never enables Funnel.
@@ -38,8 +38,9 @@ For non-interactive work, omit the flag and explain that publication lasts for
 the current login session. A separately configured local app may also need its
 own launchd job; ask before making the app always-on as well as before making
 the publication always-on. Hostname publication uses the
-signed helper's private HTTP route and keeps its local proxy on an uncommon
-loopback port. Neither the app nor proxy may bind to `0.0.0.0`.
+signed helper's VPN-only TCP 443 route to a device-local TLS ingress. Port 80 redirects to HTTPS. Neither the app nor proxy may bind to `0.0.0.0`.
+
+The device obtains and automatically renews a Let's Encrypt DNS-01 wildcard certificate for `*.<account-namespace>.vpn.obs.so`. Only the random account namespace appears in Certificate Transparency, not service names. Keys stay in owner-only files on the serving device; Cloudflare credentials stay on Cloud, whose authenticated broker permits validation only for the caller's account. TLS does not make a service publicly reachable or replace VPN account isolation. Do not bypass certificate validation. Renewal runs while a publication is active and at startup, without installing an extra persistent job. Apps moving from HTTP need their trusted origins updated to HTTPS.
 
 Useful commands:
 
