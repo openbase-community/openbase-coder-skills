@@ -88,6 +88,7 @@ Start pages:
 
 By topic:
 
+- Opening, finding, or reading a report in Openbase -> use the `openbase-coder-reports` skill. Open the requested report with `openbase-coder reports open IDENTIFIER`, which uses the `openbase://` deep-link contract. Do not use Computer Use to navigate to the Reports index as a substitute.
 - Installing / first-time setup → `docs/getting-started/index.md`, with
   `docs/getting-started/mac-app.md` (desktop app download path) and
   `docs/getting-started/developer-setup.md` (source/workspace path), and

@@ -1,8 +1,9 @@
 ---
 name: openbase-coder-reports
 description: >-
-  Use this skill when writing, listing, filtering, reading, tagging, or querying
-  Openbase Coder report artifacts. Include report provenance when creating
+  Use this skill when writing, opening, listing, filtering, reading, tagging, or querying
+  Openbase Coder report artifacts, including opening reports in the Openbase app
+  through the CLI and openbase:// URL scheme without Computer Use. Include report provenance when creating
   Super Agent reports, and prefer the reports CLI/API over ad hoc filesystem
   searches.
 version: 0.1.0
@@ -122,6 +123,31 @@ openbase-coder reports read REPORT_ID --json
 
 Relative report paths can be ambiguous across projects. If a relative path
 matches more than one report, rerun with the full report id or absolute path.
+
+## Open A Report In Openbase
+
+When the user asks to open or view a report in Openbase, use the reports CLI. Do not use Computer Use, screenshots, mouse clicks, or sidebar navigation for this task. Opening the Reports index is not equivalent to opening the requested report.
+
+```bash
+openbase-coder reports open REPORT_ID
+openbase-coder reports open /absolute/project/.reports/summary.md
+```
+
+Use `reports list --project PROJECT --json` to resolve an uncertain identifier, or `reports show IDENTIFIER --json` to check a known one. Prefer an absolute path or the returned full report id. To open several requested reports, invoke `reports open` once for each report; the desktop may show the last opened report rather than separate tabs.
+
+The CLI resolves a report from known `.reports` sources. An arbitrary Markdown file elsewhere in a project is not automatically a report. If a newly created report was saved outside `.reports`, place its canonical file under the relevant project's `.reports` directory and update references before retrying. Do not substitute unrelated indexed reports when resolution fails.
+
+The CLI constructs this deep link using URL query encoding:
+
+```text
+openbase://open?intent=report&source=cli-reports&project=ENCODED_PROJECT_PATH&report=ENCODED_REPORT_RELATIVE_PATH
+```
+
+`project` is the absolute project directory containing `.reports`; `report` is the file path relative to that `.reports` directory, including any nested folders. Encode each query value with a structured URL encoder, such as Python `urllib.parse.urlencode` or JavaScript `URLSearchParams`. Do not concatenate unescaped paths or include `.reports/` in the `report` value.
+
+Prefer `openbase-coder reports open` over constructing the URL manually: it validates the report and first delivers the deep link to the running desktop app's authenticated local control server. If that delivery is unavailable, it invokes the OS URL handler to launch Openbase. On macOS, an already correctly encoded deep link can also be opened with `open "$REPORT_URL"`. Do not read or expose the desktop control-server secret to perform this task.
+
+If the command fails, inspect its error and resolve the identifier or installation issue through the CLI. Do not silently fall back to Computer Use. A successful CLI invocation confirms delivery or launch was requested; it does not independently verify that the report rendered. Only open report windows when the user explicitly requests viewing them.
 
 ## Date Semantics
 
