@@ -117,13 +117,8 @@ to both.
 
 Ask which email provider the user relies on:
 
-- **Gmail** (officially supported): install the
-  [gmail-cli-skill](https://github.com/openbase-community/gmail-cli-skill) into
-  `~/.agents/skills`. It is a narrow CLI that enforces minimum OAuth scopes
-  and gates sending behind explicit approval. Follow its README/SKILL.md for
-  OAuth setup.
-- **Other providers**: note the preference and skip rather than installing
-  anything unofficial.
+- **Gmail, Outlook/Microsoft 365, or Apple Mail** (officially supported): install the [email-cli skill](https://github.com/openbase-community/email-cli-skill) into `~/.agents/skills/email-cli` using `npx skills add openbase-community/email-cli-skill --skill email-cli --global --agent codex --agent claude-code`. Follow its README/SKILL.md to install the shared CLI package and configure the chosen provider. The `gmail-cli`, `outlook-cli`, and `apple-mail-cli` commands select provider backends in that package. Gmail and Graph/Outlook use OAuth; Apple Mail uses an existing signed-in Mail account on macOS. Approved senders gate body access, and drafts/sending require explicit approval. Microsoft tenants may require administrator consent for Graph access.
+- **Other providers**: note the preference and skip rather than installing anything unofficial.
 
 ### 4. Meeting notes
 
