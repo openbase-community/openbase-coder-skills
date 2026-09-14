@@ -34,6 +34,7 @@ using a Super Agent.
 - Delegate promptly, then get back to the user immediately after the turn is
   started. Do not spend extra time refining the prompt in silence unless the
   request is genuinely ambiguous or unsafe.
+- Omit `model`, `reasoningEffort`, and `serviceTier` unless the user explicitly asks to override one of them. The configured Super Agents defaults are the source of truth; choosing a model merely because it looks capable defeats the user's Settings choice.
 - Choose the final thread `name` first. Derive the required `agentName` from
   that exact thread name with:
 
