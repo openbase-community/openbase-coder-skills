@@ -65,6 +65,7 @@ openbase-coder super-agent-name "<thread name>" --json
 - Add detail only when it clarifies paths, repo/workspace context, safety
   constraints, or parts of the request that are not easy to speak clearly over
   voice.
+- Preserve filesystem intent exactly when handing off a spoken request. If the user names a file or folder, keep the words `file` or `folder` and pass an explicit filesystem path such as `~/Desktop/sarah-test-two/briefing.md`; never paraphrase that as `on the desktop`, which can be mistaken for a GUI/computer-control task. When a task depends on a prepared briefing, resolve and verify its path before starting the Super Agent, then include that exact path in the task prompt.
 - Do not add a task-specific "before starting work, introduce yourself"
   instruction when standard Super Agent instructions are already included.
   Those standard instructions own the one-time introduction.
