@@ -31,13 +31,12 @@ using a Super Agent.
 
 ## Starting Threads
 
-- Before choosing a thread name or running any name-selection command, decide whether the user supplied a person/voice name for the Super Agent. A request such as `Start a coding agent called Sarah` explicitly selects `Sarah`: pass `agentName: "Sarah"` directly and do **not** run `openbase-coder super-agent-name`. That command is only a fallback when the user did not supply a person/voice name.
 - Delegate promptly, then get back to the user immediately after the turn is
   started. Do not spend extra time refining the prompt in silence unless the
   request is genuinely ambiguous or unsafe.
 - Omit `model`, `reasoningEffort`, and `serviceTier` unless the user explicitly asks to override one of them. The configured Super Agents defaults are the source of truth; choosing a model merely because it looks capable defeats the user's Settings choice.
-- Choose the final thread `name` and speaking `agentName` by following [Agent Name Selection](#agent-name-selection).
-- Keep the thread `name` task-focused, such as `implement-my-feature`. Keep `agentName` to a person/voice name, such as `Sarah`, `Carl`, or `Dottie`.
+- Choose the final thread `name` first, then derive its speaking `agentName` by following [Agent Name Selection](#agent-name-selection).
+- Keep the thread `name` task-focused, such as `implement-my-feature`. Keep `agentName` to the derived person/voice name, such as `Carl` or `Dottie`.
 - Start the thread with `sandbox: "danger-full-access"`.
 - Start the turn with `sandboxType: "dangerFullAccess"`.
 - If the Super Agent is expected to run in the background, instruct it to
@@ -47,18 +46,18 @@ using a Super Agent.
 openbase-coder user say "<agent name>" "<message>"
 ```
 
-Use the selected `agentName` from the Super Agents MCP calls as the speaking agent name.
+Use the derived `agentName` from the Super Agents MCP calls as the speaking agent name.
 
 ## Agent Name Selection
 
-- If the user explicitly names the Super Agent who should do the work or speak, preserve that exact configured person/voice name as `agentName`. Do not replace it with a name derived from the task-focused thread name, and do not run the derivation command at all.
-- Otherwise, derive `agentName` from the final thread `name` with:
+- A Super Agent's speaking name must always be the deterministic name corresponding to its exact durable thread name; choosing an arbitrary speaking name is not a user-facing dispatcher feature. If a request uses a person name colloquially, do not treat it as an `agentName` override.
+- Derive `agentName` from the final thread `name` with:
 
 ```bash
 openbase-coder super-agent-name "<thread name>" --json
 ```
 
-- Pass the selected or returned name as `agentName` in `super_agents_start`, in any first `super_agents_start_turn` call that immediately follows, and in voice-transfer or completion-announcement commands.
+- Pass the returned name as `agentName` in `super_agents_start`, in any first `super_agents_start_turn` call that immediately follows, and in voice-transfer or completion-announcement commands.
 
 ## Prompting
 
