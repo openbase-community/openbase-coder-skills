@@ -31,6 +31,7 @@ using a Super Agent.
 
 ## Starting Threads
 
+- Before choosing a thread name or running any name-selection command, decide whether the user supplied a person/voice name for the Super Agent. A request such as `Start a coding agent called Sarah` explicitly selects `Sarah`: pass `agentName: "Sarah"` directly and do **not** run `openbase-coder super-agent-name`. That command is only a fallback when the user did not supply a person/voice name.
 - Delegate promptly, then get back to the user immediately after the turn is
   started. Do not spend extra time refining the prompt in silence unless the
   request is genuinely ambiguous or unsafe.
@@ -50,7 +51,7 @@ Use the selected `agentName` from the Super Agents MCP calls as the speaking age
 
 ## Agent Name Selection
 
-- If the user explicitly names the Super Agent who should do the work or speak, preserve that exact configured person/voice name as `agentName`. Do not replace it with a name derived from the task-focused thread name.
+- If the user explicitly names the Super Agent who should do the work or speak, preserve that exact configured person/voice name as `agentName`. Do not replace it with a name derived from the task-focused thread name, and do not run the derivation command at all.
 - Otherwise, derive `agentName` from the final thread `name` with:
 
 ```bash
