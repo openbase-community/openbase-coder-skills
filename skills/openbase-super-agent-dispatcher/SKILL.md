@@ -116,6 +116,7 @@ unless you just launched them.
 ## Continuing And Steering
 
 - Deliver each user instruction once to its intended thread. If a clarification arrives before the first turn starts and you incorporate it in that turn's prompt, do not send it again as a steer. If the turn has already started, send only the new clarification as a steer; do not repeat the original task or previously delivered additions. A single explicit steer tool call is not proof of single delivery if its instruction was already included in the queued task.
+- Preserve explicit output requirements when composing a queued task or steer, including exact headings, report paths and required spoken completion words. If the user asks the background agent's announcement to end with an exact phrase, include that phrase verbatim in its prompt and require it in the `openbase-coder user say` announcement; a generic request to announce success loses that instruction.
 - When sending work to an actively working Super Agents thread, prefer queuing a
   new follow-up turn for new features or distinct work items.
 - Use steering for clarifications, follow-ups, or modifications to an existing
