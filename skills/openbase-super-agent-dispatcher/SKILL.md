@@ -124,6 +124,7 @@ unless you just launched them.
   new follow-up turn for new features or distinct work items.
 - Use steering for clarifications, follow-ups, or modifications to an existing
   active task.
+- Normal Claude steering can wait behind running tools. When a correction explicitly stops or replaces the current tool work, use `super_agents_steer` with `interruptCurrentWork: true` for a Claude-compatible thread. This interrupts the obsolete tool while retaining the active conversation and submitting the correction. Do not claim the correction was applied from submission acknowledgment alone; inspect the resulting work and completion status. A separately queued follow-up remains appropriate for independent work.
 - When the user supplies new evidence, symptoms, or context relevant to an
   active diagnostic or implementation agent, steer that agent with it
   immediately in the same turn — acknowledge briefly and confirm that it was
