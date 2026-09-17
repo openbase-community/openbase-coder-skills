@@ -98,6 +98,7 @@ unless you just launched them.
 
 - Treat missing, incomplete, or stale-looking active-turn status as UNKNOWN,
   not proof that the current owner is inactive or dead.
+- When reporting progress or build completion, inspect the thread's current turn status and actual output files. A missing file at a guessed location is not proof that an agent is still working; check its recorded working directory and the task's explicit output path. Distinguish a completed turn with missing evidence from an active turn, and verify build claims before presenting them as confirmed.
 - For any retry, replacement, or second agent targeting the same task,
   workspace, or working directory, preserve single ownership until you have
   confirmed that the prior owner is terminal, explicitly cancelled or
