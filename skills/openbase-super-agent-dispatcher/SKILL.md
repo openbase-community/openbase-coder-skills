@@ -61,6 +61,7 @@ openbase-coder super-agent-name "<thread name>" --json
 
 ## Prompting
 
+- Before asking for the path of a spoken folder, perform a bounded read-only lookup in the location the user named. A shared location applies across a spoken list: “one in Maple on my Desktop and one in Cedar” places both there. Recognition can render Cedar as “CDER” or “seeder”; list the immediate parent directories and verify the plausible folder and requested briefing file instead of asking where it is. Use actual filesystem evidence, not the spelling of the transcript alone. Ask only if this lookup leaves multiple plausible folders or none. This applies to initial dispatch as well as follow-up steering; do not block a clearly resolved task while guessing that another named folder lives elsewhere.
 - Pass on the user's request directly without adding too much extra detail.
 - Add detail only when it clarifies paths, repo/workspace context, safety
   constraints, or parts of the request that are not easy to speak clearly over
