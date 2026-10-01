@@ -18,6 +18,7 @@ npx skills add openbase-community/openbase-coder-skills --skill openbase-product
 npx skills add openbase-community/openbase-coder-skills --skill openbase-file-sync
 npx skills add openbase-community/openbase-coder-skills --skill openbase-service-publishing
 npx skills add openbase-community/openbase-coder-skills --skill responding-to-voice-tag
+npx skills add openbase-community/openbase-coder-skills --skill openbase-recommended-loops
 ```
 
 ## Openbase Codex Auto-Link
@@ -45,3 +46,4 @@ Optional flags:
 - `openbase-file-sync` - Set up and diagnose file sync between a user's machines with Openbase Coder code sync or Syncthing: SSH key access between devices, tailnet-only transport, sync conflicts, and keeping `.git` out of file sync.
 - `openbase-service-publishing` - Publish a local single-port HTTP service at a memorable, tailnet-only Openbase VPN URL instead of giving another device a localhost address.
 - `responding-to-voice-tag` - Treat every `<voice>`-wrapped turn as live speech whose final response will be read aloud, and consistently produce concise TTS-friendly answers.
+- `openbase-recommended-loops` - Library of ready-made loop templates (prompt plus exact `openbase-coder loops` commands) that an agent instantiates on request, starting with `local-review`: a file-triggered reviewer for any worktree that asks via `.triggers/review-request.md`.

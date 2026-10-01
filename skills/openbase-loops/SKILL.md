@@ -125,6 +125,40 @@ reach this machine:
   "Triggering event" section. Command loops receive it as the
   `SUPER_AGENTS_EVENT_JSON` environment variable.
 
+## File (Flag) Triggers
+
+A loop can also run when a file appears or changes on this machine:
+
+```bash
+openbase-coder loops add-file-trigger LOOP_NAME \
+  --path '~/Projects/*/code/*-worktrees/*/.triggers/review-request.md' \
+  --description "Local review requests" \
+  --filter name endsWith -request.md
+```
+
+- `--path` is an absolute glob (`~` is expanded; `*`, `?`, `**` allowed). The
+  `openbase-routines` sweep scans it about once a minute.
+- Each `(path, mtime)` fires once: touching the file fires again, deleting and
+  recreating fires as `created`. Files that already match when the trigger is
+  added are recorded silently; `--fire-existing` runs for them too.
+- Payload: `{path, name, dir, mtime, change: created|modified, contents}`
+  (`contents` for UTF-8 files up to 16 KB). Filters apply to this payload.
+- No sender allowlist is needed, even for agent loops: a local file carries the
+  same trust as `loops emit`. Every file event is its own run, so pair file
+  triggers with `--fresh-thread-per-run` for parallel handling and have the
+  prompt claim its file (write a response next to it) before working.
+- Remove with `loops remove-trigger`, like any trigger.
+
+### The `.triggers/` convention
+
+`.reports/` is for people; `.triggers/` is for agents. Leave a message for
+another agent or loop as one Markdown file under `<project>/.triggers/` with
+YAML front matter (`kind`, `status`, `from`, `created_at`) and the message as
+the body. Requests (`review-request.md`) are answered by a response beside them
+(`review-response.md`); a request is pending while the response is missing or
+older. Never commit `.triggers/` (setup adds it to the global Git ignore). The
+`openbase-recommended-loops` skill has ready-made loops on this convention.
+
 ## Hard Rules
 
 - Do not build or propose a per-provider connector registry in Openbase core;
