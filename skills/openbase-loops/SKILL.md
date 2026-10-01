@@ -131,9 +131,9 @@ A loop can also run when a file appears or changes on this machine:
 
 ```bash
 openbase-coder loops add-file-trigger LOOP_NAME \
-  --path '/path/to/*-worktrees/*/.triggers/review-request.md' \
+  --path '/path/to/*-worktrees/*/.signals/ready-for-review.md' \
   --description "Local review requests" \
-  --filter name endsWith -request.md
+  --filter name startsWith ready-for-
 ```
 
 - `--path` is an absolute glob (`~` is expanded; `*`, `?`, `**` allowed). The
@@ -150,14 +150,14 @@ openbase-coder loops add-file-trigger LOOP_NAME \
   prompt claim its file (write a response next to it) before working.
 - Remove with `loops remove-trigger`, like any trigger.
 
-### The `.triggers/` convention
+### The `.signals/` convention
 
-`.reports/` is for people; `.triggers/` is for agents. Leave a message for
-another agent or loop as one Markdown file under `<project>/.triggers/` with
+`.reports/` is for people; `.signals/` is for agents. Leave a message for
+another agent or loop as one Markdown file under `<project>/.signals/` with
 YAML front matter (`kind`, `status`, `from`, `created_at`) and the message as
-the body. Requests (`review-request.md`) are answered by a response beside them
+the body. Requests (`ready-for-review.md`) are answered by a response beside them
 (`review-response.md`); a request is pending while the response is missing or
-older. Never commit `.triggers/` (setup adds it to the global Git ignore). The
+older. Never commit `.signals/` (setup adds it to the global Git ignore). The
 `openbase-recommended-loops` skill has ready-made loops on this convention.
 
 ## Hard Rules

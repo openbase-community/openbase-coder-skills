@@ -3,7 +3,7 @@ name: openbase-recommended-loops
 description: >-
   Use this skill when a user wants a ready-made Openbase loop instead of
   designing one from scratch: a local code reviewer that answers
-  `.triggers/review-request.md` files, or any other template listed here.
+  `.signals/ready-for-review.md` files, or any other template listed here.
   Each entry is a prompt plus the exact `openbase-coder loops` commands to
   instantiate it on this machine; the product never installs loops on its own.
 version: 0.1.0
@@ -43,9 +43,9 @@ Re-run `loops create` with the same name after editing the prompt.
 ### `local-review`: file-triggered worktree reviewer
 
 Any agent working in a worktree asks for a second-opinion review by writing
-`.triggers/review-request.md` (a short statement of the task). This loop
+`.signals/ready-for-review.md` (a short statement of the task). This loop
 reviews the diff against that task, fixes what it can, commits on the feature
-branch, and writes `.triggers/review-response.md`. It never pushes, never
+branch, and writes `.signals/review-response.md`. It never pushes, never
 touches other checkouts, and claims the request with an in-progress response so
 parallel runs do not collide. Prompt: `loops/local-review/prompt.md`.
 
@@ -54,17 +54,17 @@ folders:
 
 ```bash
 openbase-coder loops add-file-trigger local-review \
-  --path '/path/to/*-worktrees/*/.triggers/review-request.md' \
+  --path '/path/to/*-worktrees/*/.signals/ready-for-review.md' \
   --description "Local review requests"
 ```
 
 Requesting a review from a worktree:
 
 ```bash
-mkdir -p .triggers && cat > .triggers/review-request.md <<'MSG'
+mkdir -p .signals && cat > .signals/ready-for-review.md <<'MSG'
 ---
-openbase_trigger:
-  kind: review-request
+openbase_signal:
+  kind: ready-for-review
   status: open
   from: <agent or thread name>
   created_at: <ISO 8601 UTC>
@@ -74,7 +74,7 @@ Task: <what this worktree is supposed to accomplish>. Scope: <areas>. Scrutinize
 MSG
 ```
 
-Then poll until `.triggers/review-response.md` is newer than the request, read
+Then poll until `.signals/review-response.md` is newer than the request, read
 it, verify the reviewer's commits, and address the rest.
 
 ## Adding A Template
