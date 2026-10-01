@@ -136,29 +136,16 @@ openbase-coder loops add-file-trigger LOOP_NAME \
   --filter name startsWith ready-for-
 ```
 
-- `--path` is an absolute glob (`~` is expanded; `*`, `?`, `**` allowed). The
-  `openbase-routines` sweep scans it about once a minute.
-- Each `(path, mtime)` fires once: touching the file fires again, deleting and
-  recreating fires as `created`. Files that already match when the trigger is
-  added are recorded silently; `--fire-existing` runs for them too.
+- `--path` is an absolute glob (`~` is expanded; `*`, `?`, `**` allowed). The `openbase-routines` sweep scans it about once a minute.
+- Each `(path, mtime)` fires once: touching the file fires again, deleting and recreating fires as `created`. Files that already match when the trigger is added are recorded silently; `--fire-existing` runs for them too.
 - Each sweep tracks at most 500 currently matching files per trigger; narrow the glob or split it across loops when a directory can exceed that.
-- Payload: `{path, name, dir, mtime, change: created|modified, contents}`
-  (`contents` for UTF-8 files up to 16 KB). Filters apply to this payload.
-- No sender allowlist is needed, even for agent loops: a local file carries the
-  same trust as `loops emit`. Every file event is its own run, so pair file
-  triggers with `--fresh-thread-per-run` for parallel handling and have the
-  prompt claim its file (write a response next to it) before working.
+- Payload: `{path, name, dir, mtime, change: created|modified, contents}` (`contents` for UTF-8 files up to 16 KB). Filters apply to this payload.
+- No sender allowlist is needed, even for agent loops: a local file carries the same trust as `loops emit`. Every file event is its own run, so pair file triggers with `--fresh-thread-per-run` for parallel handling and have the prompt claim its file (write a response next to it) before working.
 - Remove with `loops remove-trigger`, like any trigger.
 
 ### The `.signals/` convention
 
-`.reports/` is for people; `.signals/` is for agents. Leave a message for
-another agent or loop as one Markdown file under `<project>/.signals/` with
-YAML front matter (`kind`, `status`, `from`, `created_at`) and the message as
-the body. Requests (`ready-for-review.md`) are answered by a response beside them
-(`review-response.md`); a request is pending while the response is missing or
-older. Never commit `.signals/` (setup adds it to the global Git ignore). The
-`openbase-recommended-loops` skill has ready-made loops on this convention.
+`.reports/` is for people; `.signals/` is for agents. Leave a message for another agent or loop as one Markdown file under `<project>/.signals/` with YAML front matter (`kind`, `status`, `from`, `created_at`) and the message as the body. Requests (`ready-for-review.md`) are answered by a response beside them (`review-response.md`); a request is pending while the response is missing or older. Never commit `.signals/` (setup adds it to the global Git ignore). The `openbase-recommended-loops` skill has ready-made loops on this convention.
 
 ## Hard Rules
 
