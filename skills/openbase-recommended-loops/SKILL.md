@@ -54,7 +54,7 @@ folders:
 
 ```bash
 openbase-coder loops add-file-trigger local-review \
-  --path '~/Projects/*/code/*-worktrees/*/.triggers/review-request.md' \
+  --path '/path/to/*-worktrees/*/.triggers/review-request.md' \
   --description "Local review requests"
 ```
 

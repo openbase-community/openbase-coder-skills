@@ -131,7 +131,7 @@ A loop can also run when a file appears or changes on this machine:
 
 ```bash
 openbase-coder loops add-file-trigger LOOP_NAME \
-  --path '~/Projects/*/code/*-worktrees/*/.triggers/review-request.md' \
+  --path '/path/to/*-worktrees/*/.triggers/review-request.md' \
   --description "Local review requests" \
   --filter name endsWith -request.md
 ```
@@ -141,6 +141,7 @@ openbase-coder loops add-file-trigger LOOP_NAME \
 - Each `(path, mtime)` fires once: touching the file fires again, deleting and
   recreating fires as `created`. Files that already match when the trigger is
   added are recorded silently; `--fire-existing` runs for them too.
+- Each sweep tracks at most 500 currently matching files per trigger; narrow the glob or split it across loops when a directory can exceed that.
 - Payload: `{path, name, dir, mtime, change: created|modified, contents}`
   (`contents` for UTF-8 files up to 16 KB). Filters apply to this payload.
 - No sender allowlist is needed, even for agent loops: a local file carries the

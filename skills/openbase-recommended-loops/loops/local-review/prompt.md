@@ -7,7 +7,7 @@ A worktree (or any checkout) asks for a review by containing `.triggers/review-r
 ## Project specifics
 
 <!-- The installer fills this in for this machine. Typical content:
-- Which directories to scan when there is no triggering event, e.g. ~/Projects/*/code/*-worktrees/*/.triggers/review-request.md
+- Which directories to scan when there is no triggering event, e.g. /path/to/*-worktrees/*/.triggers/review-request.md
 - The base branch each repo integrates into (e.g. develop; main for pinned repos) and how to find it.
 - The cheap verification commands per repo type (lint, typecheck, targeted tests) and how they are run without touching shared installs.
 - Commit message conventions and required trailers.
