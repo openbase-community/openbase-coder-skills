@@ -88,6 +88,7 @@ unless the user explicitly asks the AI to operate the screen.
 - `open-url` requires a URL scheme. It supports normal web URLs and custom deep
   links, but rejects `data:`, `file:`, and `javascript:` URLs.
 - Mute and unmute require an active Openbase voice call in the iOS app.
+- A command is applied only when the phone acknowledges it. The CLI prints `command delivered` on success; `published (unconfirmed)` plus a non-zero exit means no phone app received it (not connected, backgrounded, or signed out). Report that to the user as **not done**; never say the phone was muted, unmuted, or opened a URL unless the command was delivered.
 - `upload-logs` requires the iOS app to be foregrounded or connected to the
   app-control WebSocket. It reuses the app's diagnostics uploader and does not
   require the user to tap the upload button.
