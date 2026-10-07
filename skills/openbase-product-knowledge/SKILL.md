@@ -101,8 +101,7 @@ By topic:
 - Voice call routing, transferring to Super Agents, speaking announcements
   → `docs/voice-routing.md`
 - Cloud DevSpace (Linux sandbox instead of a Mac) → `docs/cloud-devspace.md`
-- Agents on another machine using the laptop's screen, browser, or MCP
-  servers (`openbase-coder mcp-gateway`) → `docs/laptop-tools.md`
+- Agents on another machine using the laptop's screen, browser, or MCP servers (`openbase-coder mcp-gateway`) → `docs/laptop-tools.md`
 - Fully local audio/models (privacy mode) → `docs/local-only.md`
 - iPhone won't connect, LiveKit call timeouts, voice route errors
   → `docs/troubleshooting.md`
