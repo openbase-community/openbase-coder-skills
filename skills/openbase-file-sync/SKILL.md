@@ -95,8 +95,16 @@ openbase-coder sync migrate-from-syncthing --apply
 
 It removes the old service, moves its state into `~/.openbase/trash/`, and
 adds the previously synced folders as Openbase Sync roots (or prints the
-`sync-daemon configure` command if Openbase Sync is not set up yet). Ask
-before running `--apply` on a user's machine.
+`sync-daemon configure` command if Openbase Sync is not set up yet). Old
+custom ignore rules are not carried over; the command prints how many were
+left behind.
+
+Only after `--apply` has run on **every** machine, remove the old marker and
+ignore files with `openbase-coder sync migrate-from-syncthing --apply
+--remove-markers`. Doing it earlier is dangerous: Openbase Sync would carry
+the deletion of an ignore file to a machine whose old sync is still running,
+and that engine would then start syncing `.git`. Ask before running
+`--apply` on a user's machine.
 
 ## Diagnosing Sync Problems
 
