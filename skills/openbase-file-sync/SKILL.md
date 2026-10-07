@@ -2,11 +2,11 @@
 name: openbase-file-sync
 description: >-
   Use this skill when setting up or diagnosing file sync between a user's
-  computers with Openbase Coder code sync or Syncthing: pairing a laptop with
-  a desktop/Mac mini or DevSpace, SSH key access between devices, keeping
-  sync on the Tailscale tailnet, Syncthing GUI credentials, sync conflicts,
-  or why git repos must never sync their .git directories.
-version: 0.1.0
+  computers with Openbase Sync: pairing a laptop (edge) with an always-on
+  Mac mini, desktop or DevSpace (hub), choosing which folders sync, sync
+  conflicts, migrating from the previous Openbase code sync, SSH access
+  between devices, or why git repos must never sync their .git directories.
+version: 0.2.0
 ---
 
 # Openbase File Sync
@@ -21,175 +21,122 @@ Use this skill when:
 
 - the user wants files synced between two of their machines (laptop ⇄
   desktop/Mac mini, laptop ⇄ Cloud DevSpace)
-- setting up or checking `openbase-coder sync` (code sync)
-- diagnosing sync conflicts, `*.sync-conflict-*` files, out-of-sync folders,
-  or "directory has been deleted on a remote device" errors
-- reviewing a user-managed Syncthing installation that touches code
+- setting up or checking Openbase Sync (`openbase-coder sync-daemon`,
+  `openbase-coder sync`)
+- diagnosing sync conflicts, a disconnected peer, or changes that do not
+  arrive on the other machine
+- moving a machine off the previous Openbase code sync
 - the user asks about SSH access between their devices for sync or
   administration
 
 ## Hard Rules
 
-1. **`.git` (and any VCS metadata: `.jj`, `.hg`) must NEVER travel over file
-   sync.** Syncthing moves files independently with no transactional
-   grouping; syncing a live `.git` tears refs/index state and silently
-   corrupts commits. Git state moves only through git's own transports
-   (code sync's reconciler does this automatically).
-2. **Ignore files do not sync.** Syncthing keeps `.stignore` machine-local,
-   and a symlinked include target outside the synced folder never
-   propagates. Any safety-critical ignore pattern must be applied and
-   verified **on every device separately** — never assume the other machine
-   inherited it.
-3. **Verify ignores against the running instance**, not the file: `GET
-   /rest/db/ignores?folder=<id>` must show the expanded patterns (e.g.
-   `(?d).git`). If a `.stignore` edit is not reflected, trigger `POST
-   /rest/db/scan?folder=<id>`.
-4. Secrets (`.env`, keys) inside synced project folders sync **on purpose**
-   in code sync — that is a feature git cannot provide. Do not "fix" it.
+1. **`.git` (and any VCS metadata: `.jj`, `.hg`) must NEVER travel as plain
+   files.** Copying a live `.git` file by file tears refs and index state
+   and silently corrupts commits. Openbase Sync never file-syncs `.git`; it
+   moves commits, branches and worktrees as git. Never work around this.
+2. **Conflicts are records, not overwrites.** When both machines changed the
+   same thing incompatibly, Openbase Sync keeps both and records a conflict.
+   Resolve it deliberately (keep mine / take theirs); never "fix" it by
+   copying files over by hand.
+3. Secrets (`.env`, keys) inside synced folders sync **on purpose** — that is
+   a feature git cannot provide. Do not "fix" it.
+4. Delete state by moving it to trash, never with `rm -rf` on both machines;
+   a deletion on one machine propagates to the other.
 
-## Prefer Product Code Sync
+## Route To The Product Docs
 
-`openbase-coder sync` manages an isolated Syncthing instance end to end and
-is the right answer for new setups (the user-managed path below is for
-diagnosing setups the user built themselves). Don't restate the product docs
-here — route to them:
+Don't restate the product docs here:
 
-- **Command surface** — `enable`, `add`/`remove`, `status`, `conflicts`,
-  `resolve <id> --keep-local|--use-remote`, `reconcile` — is owned by the
-  `sync` command reference (`cli/docs/commands/sync.md`).
-- **Durable behavior** — what syncs vs. never syncs, the git-state
-  reconciler, the write lease, staggered versioning, eligibility, and
-  conflict handling — is owned by *Sync Between Your Computers*
-  (`cli/docs/code-sync.md`). Its Troubleshooting section covers the disk-stall
-  failure and the reconcile heartbeat.
+- **How it works** — hub/edge, roots, placement and pins, git as git,
+  conflicts, thread and skills sync, migration — is owned by *Sync Between
+  Your Computers* (`cli/docs/code-sync.md`, published at
+  docs.openbase.cloud).
+- **Commands** — `openbase-coder sync status|conflicts|resolve|
+  migrate-from-syncthing` (`cli/docs/commands/sync.md`) and `openbase-coder
+  sync-daemon configure|install-binary|status|conflicts|resolve|disable`
+  (`cli/docs/commands/sync-daemon.md`).
 
-Operational facts you need to debug the **managed** instance (not in the user
-docs):
+## Setup Walkthrough
 
-- Config at `~/.openbase/code-sync/`; REST GUI on `127.0.0.1:8385` (API key in
-  that `config.xml`) — deliberately not the user-managed default 8384.
-- Version history (the undo net for uncommitted work) lives under
-  `~/.openbase/sync-versions/<folder-id>/`; check it before declaring data
-  lost.
-- Conflict records (branch divergences and `*.sync-conflict-*` files) are
-  exposed at `GET /api/sync/conflicts/`, resolvable from the console/iOS Sync
-  pages or the CLI.
+1. **Both devices on Openbase VPN.** Each must reach the other's VPN
+   address. The hub is the machine that stays on.
+2. **Install the sync binaries** Openbase provides on both machines with
+   `openbase-coder sync-daemon install-binary ...`.
+3. **Configure the hub** with its VPN address and the folders to sync; keep
+   the printed pair secret:
 
-## Device Access Setup (walk the user through this)
+   ```bash
+   openbase-coder sync-daemon configure --role hub --listen <hub-vpn-ip> \
+     --root ~/Projects --with-product-folders
+   ```
+
+4. **Configure the edge** with the same roots:
+
+   ```bash
+   openbase-coder sync-daemon configure --role edge --peer <hub-vpn-ip> \
+     --pair-secret <secret> --root ~/Projects --with-product-folders
+   ```
+
+   `--with-product-folders` keeps Openbase thread sync and skills sync
+   working. Use the same home-relative layout on both machines.
+5. **Verify** with `openbase-coder sync status` on each machine (a peer is
+   listed) or the console Sync page.
+
+## Migrating From The Previous Code Sync
+
+Machines that used the earlier Openbase code sync (a `code-sync` service,
+`~/.openbase/code-sync`) need a one-time migration on **each** machine:
+
+```bash
+openbase-coder sync migrate-from-syncthing          # review the plan
+openbase-coder sync migrate-from-syncthing --apply
+```
+
+It removes the old service, moves its state into `~/.openbase/trash/`, and
+adds the previously synced folders as Openbase Sync roots (or prints the
+`sync-daemon configure` command if Openbase Sync is not set up yet). Ask
+before running `--apply` on a user's machine.
+
+## Diagnosing Sync Problems
+
+- **Daemon not answering** — `openbase-coder services start sync-daemon`,
+  then `openbase-coder services logs sync-daemon`.
+- **No peer** — the hub is off, asleep, or unreachable over Openbase VPN.
+  Check both machines' VPN status; the edge reconnects by itself.
+- **A change did not arrive** — check `openbase-coder sync conflicts` first:
+  a conflicted path waits for a decision. Confirm the folder is inside a
+  configured root (`openbase-coder sync status`).
+- **A branch looks different on each machine** — a diverged branch shows up
+  as a conflict; pick a side with `openbase-coder sync resolve <id>
+  --keep-local|--use-remote`.
+- **A commit or build fails mysteriously** — check conflicts and compare
+  `HEAD` with `origin/<branch>` before committing.
+
+## Device Access Setup
 
 Sync problems are usually diagnosed from one machine while the other
-misbehaves, so establish access first. Prompt the user to:
+misbehaves, so establish access first:
 
-1. **Tailscale on both devices, same tailnet.** Verify with
-   `tailscale status` and that each device resolves the other's MagicDNS
-   name (`ping <device>.<tailnet>.ts.net`). Openbase Coder pairing already
-   requires this; sync reuses it.
-2. **Public-key SSH from the laptop to the remote machine** (bidirectional
+1. **Public-key SSH from the laptop to the remote machine** (bidirectional
    if the user works from both). On the remote Mac enable Remote Login
    (System Settings → General → Sharing, or
    `sudo systemsetup -setremotelogin on`), then from the laptop:
 
    ```bash
    ssh-keygen -t ed25519    # if no key yet; accept defaults
-   ssh-copy-id <user>@<device>.<tailnet>.ts.net
-   ssh -o BatchMode=yes <user>@<device>.<tailnet>.ts.net true  # must succeed silently
+   ssh-copy-id <user>@<remote-vpn-hostname>
+   ssh -o BatchMode=yes <user>@<remote-vpn-hostname> true  # must succeed silently
    ```
 
-   Use the Tailscale MagicDNS hostname, not a LAN IP — it works from
-   anywhere on the tailnet. Note that over non-interactive SSH the remote
-   keychain stays locked: HTTPS git fetches of private repos will fail
-   there even when they work in a local session on that machine.
-3. **Keep sync traffic on the tailnet, not the public internet.** For the
-   managed instance this is guaranteed by construction. For a user-managed
-   Syncthing, check each device's config: peer device addresses should be
-   pinned `tcp://<magicdns-or-tailscale-ip>:22000` (not `dynamic`), and
-   `globalAnnounceEnabled`, `relaysEnabled`, `natEnabled` should be
-   `false`. A relay in the connection list (`/rest/system/connections`
-   showing a `relay://` address) means data is transiting third parties.
-4. **Same GUI credentials on both devices** (user-managed instances only —
-   the managed instance is localhost + API key and needs no password).
-   Set the same GUI username/password on each device's Syncthing web UI
-   (Actions → Settings → GUI) so the user — and agents walking them
-   through fixes — can administer either side without hunting for
-   per-device passwords. REST calls authenticate with the `<apikey>` from
-   that device's `config.xml` regardless.
+   Use the VPN hostname, not a LAN IP, so it works from anywhere. Over
+   non-interactive SSH the remote keychain stays locked: HTTPS git fetches
+   of private repos fail there even when they work locally on that machine.
 
-## Diagnosing Sync Problems
+## User-Managed File Sync Tools
 
-REST quick kit (add `-H "X-API-Key: <key>"`; key is in the instance's
-`config.xml`; port 8385 managed, 8384 user-managed default):
-
-- Folder health: `GET /rest/db/status?folder=<id>` — `state` should reach
-  `idle` with `needTotalItems: 0`.
-- What is stuck: `GET /rest/db/need?folder=<id>&page=1&perpage=50`.
-- Force rescan / reload ignores: `POST /rest/db/scan?folder=<id>`.
-- Service-level errors: `GET /rest/system/error`.
-
-Common failures and their actual causes:
-
-- **`*.sync-conflict-*` files** — both machines edited the file in the same
-  window. Diff the conflict copy against the kept file, merge what matters,
-  delete the copy. Code sync records these at `/api/sync/conflicts/`;
-  sweep for strays with `find <folder> -name "*.sync-conflict-*"`.
-- **"directory has been deleted on a remote device but contains changed
-  items"** or a symlink/dir replacement that never completes — the
-  directory contains locally *ignored* files (venv, node_modules) and the
-  ignore patterns lack the `(?d)` prefix, so Syncthing may not delete them
-  to complete the operation. Prefix junk patterns with `(?d)`; if the
-  leftover content is regenerable (a stray `.venv`), delete it and rescan.
-- **Ignore added but files still listed/synced** — ignores only apply to
-  that device, and only after a rescan; already-synced copies on the peer
-  are not deleted by ignoring. Apply the pattern on both sides, rescan,
-  and clean up existing copies manually.
-- **"folder marker missing"** — the folder's `.stfolder` marker directory
-  was deleted (cleanup tools do this). If the folder contents are intact,
-  recreate it (`mkdir <folder>/.stfolder`) and rescan; the scary
-  data-loss wording usually just means the marker is gone.
-- **"folder path missing"** — the configured directory no longer exists on
-  this device. Recreate it to resume, or pause/remove the folder on both
-  devices if it is genuinely retired.
-- **Peer completion stuck below 100%** — check the *peer's* own
-  `/rest/db/status`: it is usually still scanning (initial scans of large
-  trees take many minutes) or working through a large `needBytes` backlog.
-  Slow-but-moving is healthy; investigate only if `needTotalItems` is
-  frozen across several minutes, then read the top of its need list.
-- **Peer shows connected on one side only, or dials fail repeatedly with
-  "Failed to exchange Hello messages … EOF"** — usually a half-open zombie
-  connection: one side still believes an earlier connection (to a process
-  that has since restarted) is alive and silently drops new dials as
-  duplicates. Restart the Syncthing instance on the side that logs nothing
-  during the other side's dial attempts.
-- **A repo shows the same changes as dirty on both machines** — correct
-  behavior, not a bug: working files synced while each machine keeps its
-  own `.git`. Commits made on one machine propagate via the reconciler
-  (or a plain `git fetch && git reset` when trees already match). Never
-  "fix" this by syncing `.git`.
-- **Stale months-old file content reappearing** — a working-tree echo from
-  a peer that was offline with old state. Check file versioning
-  (`~/.openbase/sync-versions/` or `.stversions/`) to restore, and check
-  whether the stale peer skipped its rescan.
-
-## Retrofitting A User-Managed Syncthing That Syncs Code
-
-If the user already syncs code folders with their own Syncthing:
-
-1. Add the VCS block to the ignore file **on every device**, at the top,
-   before broader patterns (first match wins):
-
-   ```text
-   (?d).git
-   (?d)**/.git
-   (?d).jj
-   (?d).hg
-   ```
-
-   Bare names match at every level including the folder root; `**/name`
-   alone misses the root.
-2. Rescan and verify via `GET /rest/db/ignores` on **each** device (rule 2
-   above: the ignore file itself does not sync).
-3. Prefix regenerable junk (`node_modules`, `venv`, build outputs,
-   `__pycache__`, `.DS_Store`) with `(?d)` so deletions propagate.
-4. Enable staggered versioning on code folders as the undo net for
-   uncommitted work.
-5. Recommend migrating to `openbase-coder sync`, which owns all of the
-   above and cannot regress silently (doctor checks the managed ignores).
+If the user syncs code folders with a file-sync tool of their own, make sure
+it excludes `.git`, `.jj` and `.hg` on **every** device (ignore files usually
+do not sync themselves), verify the running instance actually applies the
+patterns, and recommend moving those folders to Openbase Sync. Never let the
+same folder be synced by both tools at once.

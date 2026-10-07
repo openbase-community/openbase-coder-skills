@@ -43,7 +43,7 @@ Optional flags:
 - `openbase-super-agent-dispatcher` - Dispatch, continue, steer, transfer, and manage Openbase Super Agents from a dispatcher or another Super Agent.
 - `openbase-coder-reports` - Write, discover, read, tag, and query Openbase Coder reports, including Super Agent provenance front matter.
 - `openbase-product-knowledge` - Answer questions about the Openbase Coder product (desktop app, iOS app, Android app, web console, Openbase Cloud) by routing to the correct page of the product docs at `cli/docs/` / docs.openbase.cloud.
-- `openbase-file-sync` - Set up and diagnose file sync between a user's machines with Openbase Coder code sync or Syncthing: SSH key access between devices, tailnet-only transport, sync conflicts, and keeping `.git` out of file sync.
+- `openbase-file-sync` - Set up and diagnose Openbase Sync between a user's machines: hub/edge pairing over Openbase VPN, choosing synced folders, sync conflicts, migrating from the previous code sync, SSH access between devices, and why `.git` never file-syncs.
 - `openbase-service-publishing` - Publish a local single-port HTTP service at a memorable, tailnet-only Openbase VPN URL instead of giving another device a localhost address.
 - `responding-to-voice-tag` - Treat every `<voice>`-wrapped turn as live speech whose final response will be read aloud, and consistently produce concise TTS-friendly answers.
 - `openbase-recommended-loops` - Library of ready-made loop templates (prompt plus exact `openbase-coder loops` commands) that an agent instantiates on request, starting with `local-review`: a file-triggered reviewer for any worktree that asks via `.signals/ready-for-review.md`.
