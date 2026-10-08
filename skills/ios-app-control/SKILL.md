@@ -54,8 +54,8 @@ tab, and start the voice test call from the already-filled debug fields:
 openbase-coder user ios start-livekit-voice-test
 ```
 
-End the debug LiveKit voice test call, switch back to the normal Call tab, and
-start the regular developer call:
+End the debug LiveKit voice test call, switch back to the new-chat home screen,
+and start the regular developer call:
 
 ```bash
 openbase-coder user ios start-developer-call
