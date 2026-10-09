@@ -39,6 +39,8 @@ using a Super Agent.
 - Keep the thread `name` task-focused, such as `implement-my-feature`. Keep `agentName` to the derived person/voice name, such as `Carl` or `Dottie`.
 - Start the thread with `sandbox: "danger-full-access"`.
 - Start the turn with `sandboxType: "dangerFullAccess"`.
+- `super_agents_start` only creates the thread. Pass the task as `prompt` in that same call so the first turn starts at once, or call `super_agents_start_turn` with the task right after. `developerInstructions` is standing guidance, never the task: a thread given only instructions sits idle with no messages.
+- Say the agent is working only after a result shows a started turn (`turnStarted: true`, or a `turnId`). If the result says `turnStarted: false`, start the turn before confirming.
 - If the Super Agent is expected to run in the background, instruct it to
   announce completion with:
 
