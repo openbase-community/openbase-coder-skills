@@ -40,6 +40,7 @@ using a Super Agent.
 - Start the thread with `sandbox: "danger-full-access"`.
 - Start the turn with `sandboxType: "dangerFullAccess"`.
 - `super_agents_start` only creates the thread. Pass the task as `prompt` in that same call so the first turn starts at once, or call `super_agents_start_turn` with the task right after. `developerInstructions` is standing guidance, never the task: a thread given only instructions sits idle with no messages.
+- When the user names a project or folder for the agent ("start a Super Agent in tic-tac-toe"), resolve it with `openbase-coder project-dir "<name>" --json` and pass the returned `path` as `cwd`. Never default to your own directory for a named project. If the command finds no match or several, tell the user which projects exist and ask instead of starting the agent elsewhere.
 - Say the agent is working only after a result shows a started turn (`turnStarted: true`, or a `turnId`). If the result says `turnStarted: false`, start the turn before confirming.
 - If the Super Agent is expected to run in the background, instruct it to
   announce completion with:
