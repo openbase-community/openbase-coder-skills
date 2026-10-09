@@ -5,7 +5,7 @@ description: >-
   iOS app, including opening a URL or deep link, muting the current call, or
   unmuting the current call, switching to the debug LiveKit voice test call, or
   switching back to the regular developer call.
-version: 0.1.0
+version: 0.2.0
 ---
 
 # iOS App Control
@@ -59,6 +59,26 @@ End the debug LiveKit voice test call, switch back to the new-chat home screen, 
 ```bash
 openbase-coder user ios start-developer-call
 ```
+
+## Call controls with resulting state
+
+Use these commands for an explicitly authorized iOS voice test. They reuse the same authenticated local HTTP API and foreground app-control WebSocket as the commands above; the existing app-control channel is available in both normal and field-test builds. Field tests must still use the dedicated field-test variant.
+
+```bash
+openbase-coder user ios start-call dispatcher
+openbase-coder user ios start-call <thread-id>
+openbase-coder user ios set-speaker on
+openbase-coder user ios set-speaker off
+openbase-coder user ios end-call
+```
+
+The wire actions are `start_call` (`thread_id`: an existing thread id or `dispatcher`), `set_speaker` (`speaker`: boolean), and `end_call`. Each CLI command prints JSON containing `delivered`, `applied`, and `call_state` with boolean `connected`, `muted`, `speaker`, and `active` fields. `active` also covers connection preparation and CallKit teardown. These commands acknowledge after handling, unlike legacy receipt-only commands. `speaker` reports the actual built-in speaker output route, and `muted` reports the LiveKit microphone state. A route request that fails to take effect returns `applied: false`; never infer speaker-on from command delivery alone.
+
+`start-call` requires microphone permission to have already been granted and refuses to replace an existing call. A thread target connects the normal call then uses the existing voice-route transfer API; `dispatcher` starts the normal dispatcher call. Connection timeout or failed thread selection initiates hang-up. `end-call` is idempotent, interrupts a pending app-control start, and ends both normal and debug LiveKit test calls. Require `applied: true`, `connected: false`, and `active: false` before considering hang-up complete. A failed or timed-out command exits nonzero; missing state means an old app or no completion acknowledgement, never success. Run `end-call` to clean up an unconfirmed start before retrying. Do not automatically retry `start-call`.
+
+The server waits up to 45 seconds for completion and the CLI allows 60 seconds. Both the controlling runtime and iOS app must contain these commands; updating only the phone is insufficient. A retained older runtime must be updated through its authorized installation workflow before it can accept the new actions.
+
+For acoustic testing, start the call, explicitly set speaker on, require `applied: true` and `call_state.speaker: true`, and preserve any screenshot verification required by the field-testing procedure before speaking. Hang up in the same test step and verify the returned disconnected/inactive state before waiting, building, or ending the session. State acknowledgements do not waive a screenshot requirement. No Android parity is provided by these commands.
 
 ## Manual Desktop Screen Control
 
