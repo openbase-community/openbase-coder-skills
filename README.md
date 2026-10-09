@@ -17,6 +17,7 @@ npx skills add openbase-community/openbase-coder-skills --skill openbase-super-a
 npx skills add openbase-community/openbase-coder-skills --skill openbase-product-knowledge
 npx skills add openbase-community/openbase-coder-skills --skill openbase-file-sync
 npx skills add openbase-community/openbase-coder-skills --skill openbase-service-publishing
+npx skills add openbase-community/openbase-coder-skills --skill openbase-cloud-workspace-logins
 npx skills add openbase-community/openbase-coder-skills --skill openbase-laptop-tools
 npx skills add openbase-community/openbase-coder-skills --skill responding-to-voice-tag
 npx skills add openbase-community/openbase-coder-skills --skill openbase-recommended-loops
@@ -46,6 +47,7 @@ Optional flags:
 - `openbase-product-knowledge` - Answer questions about the Openbase Coder product (desktop app, iOS app, Android app, web console, Openbase Cloud) by routing to the correct page of the product docs at `cli/docs/` / docs.openbase.cloud.
 - `openbase-file-sync` - Set up and diagnose Openbase Sync between a user's machines: hub/edge pairing over Openbase VPN, choosing synced folders, sync conflicts, migrating from the previous code sync, SSH access between devices, and why `.git` never file-syncs.
 - `openbase-service-publishing` - Publish a local single-port HTTP service at a memorable, tailnet-only Openbase VPN URL instead of giving another device a localhost address.
+- `openbase-cloud-workspace-logins` - Sign CLIs in from a cloud workspace or any host whose browser is on another device: device-code and paste-code flows first, `openbase-coder browser open` to send the login page to the phone, and pasting back a failed `http://localhost:<port>/...` callback address for the agent to replay inside the workspace.
 - `openbase-laptop-tools` - From an agent running on a hub machine, reach the user's laptop only when the agent decides to: `edge status|run|where|forward` for display-bound commands, file presence, and ports (such as Chrome DevTools for Playwright), plus offered `*-laptop` MCP servers. Nothing is routed automatically.
 - `responding-to-voice-tag` - Treat every `<voice>`-wrapped turn as live speech whose final response will be read aloud, and consistently produce concise TTS-friendly answers.
 - `openbase-recommended-loops` - Library of ready-made loop templates (prompt plus exact `openbase-coder loops` commands) that an agent instantiates on request, starting with `local-review`: a file-triggered reviewer for any worktree that asks via `.signals/ready-for-review.md`.
