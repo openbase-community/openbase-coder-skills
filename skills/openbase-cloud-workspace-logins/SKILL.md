@@ -32,9 +32,9 @@ If a tool has a `--device-auth`, `--device-code`, `--no-browser`, `--no-launch-b
 openbase-coder browser open "<login-url>"
 ```
 
-The command prints the URL, then asks the Openbase app on the user's phone to open it. It prints `Opened on your phone.` when the app confirmed; otherwise it prints a hint to open the URL on any device. Either way it exits successfully, so it is safe to use as a browser for other CLIs. URLs without a scheme and `data:`, `file:`, and `javascript:` URLs are rejected.
+The command prints the URL, then asks the Openbase app on the user's phone to open it. It prints `Sent to the Openbase app on your phone.` when the app acknowledges receipt; this does not confirm that the browser opened. Otherwise it prints a hint to open the URL on any device. Delivery attempts take at most six seconds and delivery failures exit successfully, so the calling CLI can continue. Malformed URLs, URLs without a scheme and `data:`, `file:`, and `javascript:` URLs are rejected.
 
-Openbase cloud workspaces preset `BROWSER` and `GH_BROWSER` to `openbase-coder browser open`, so CLIs that honour those variables send their login page to the phone without you doing anything. Still relay the printed URL to the user in case the phone could not be reached.
+Openbase cloud workspaces preset `BROWSER` and `GH_BROWSER` to the `openbase-browser` executable, which invokes `openbase-coder browser open`, so CLIs that honour those variables send their login page to the phone without you doing anything. Still relay the printed URL to the user in case the phone could not be reached.
 
 ## 3. Universal fallback: paste back the localhost address
 
