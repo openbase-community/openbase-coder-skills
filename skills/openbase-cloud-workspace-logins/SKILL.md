@@ -91,11 +91,11 @@ For tools that only support a loopback redirect (`http://localhost:<port>/...` o
 
 1. Start the login and leave it waiting; its local callback listener must stay up.
 2. Get the login URL to the user (`openbase-coder browser open "<login-url>"`, or relay it).
-3. Ask the user to finish signing in and, when the browser shows a page that cannot be reached at `http://localhost:<port>/...`, copy the full address from the address bar and paste it into this thread.
-4. Replay it inside the workspace against the same loopback address, without following redirects:
+3. Ask the user to finish signing in and, when the browser shows a page that cannot be reached at `http://localhost:<port>/...`, either use the Openbase app's "Paste login link" action (it sends the address straight to this computer) or copy the full address from the address bar and paste it into this thread.
+4. If it was pasted into the thread, replay it inside the workspace; the command accepts only loopback addresses, never follows redirects, and never prints the code:
 
    ```bash
-   curl -sS --max-time 30 "http://localhost:<port>/<path>?code=...&state=..."
+   openbase-coder browser replay "http://localhost:<port>/<path>?code=...&state=..."
    ```
 
 5. Confirm the login finished (the waiting command exits successfully, or the tool's status command shows the account).
