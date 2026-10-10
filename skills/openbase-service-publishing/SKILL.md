@@ -49,9 +49,11 @@ openbase-coder service list
 openbase-coder service unpublish <name>
 ```
 
-This feature requires **Openbase VPN**. **Openbase Direct** intentionally
-carries only Openbase app traffic and cannot make arbitrary sites available to
-a phone browser.
+This feature requires **Openbase VPN**, or an **Openbase Cloud workspace**
+(its embedded node publishes the same way; add `--persist` so the
+publication survives a workspace restart). **Openbase Direct** on a Mac
+intentionally carries only Openbase app traffic and cannot make arbitrary
+sites available to a phone browser.
 
 Treat Docker multi-port projects as the exception. Publish a single web ingress
 when one exists; otherwise use the project's tailnet/container networking and
@@ -61,4 +63,4 @@ database, UDP, or other independent ports.
 Dedicated per-service DNS names are an Openbase VPN control-plane capability,
 not a local naming trick. The authenticated owner-scoped Cloud API allocates
 the owner-scoped private DNS record; the signed helper installs only the matching hostname
-route. Official Tailscale, unknown providers, and Openbase Direct must reject publication before changing local state.
+route (in a cloud workspace, the embedded node's own service forward). Official Tailscale, unknown providers, and Openbase Direct on a Mac must reject publication before changing local state.
