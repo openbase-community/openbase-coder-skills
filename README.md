@@ -11,7 +11,7 @@ npx skills add openbase-community/openbase-coder-skills --list
 # Install individual skills
 npx skills add openbase-community/openbase-coder-skills --skill openbase-coder-routines
 npx skills add openbase-community/openbase-coder-skills --skill openbase-computer-use
-npx skills add openbase-community/openbase-coder-skills --skill ios-app-control
+npx skills add openbase-community/openbase-coder-skills --skill phone-app-control
 npx skills add openbase-community/openbase-coder-skills --skill openbase-coder-reports
 npx skills add openbase-community/openbase-coder-skills --skill openbase-super-agent-dispatcher
 npx skills add openbase-community/openbase-coder-skills --skill openbase-product-knowledge
@@ -41,7 +41,7 @@ Optional flags:
 
 - `openbase-coder-routines` - Use `openbase-coder routines ...`, the Routines console page, and the local routines API while keeping routine operations out of the Super Agents MCP tool surface.
 - `openbase-computer-use` - Route visible desktop control to the right path: native Computer Use tools on macOS, and the Openbase Coder Linux CLI on DevSpace Xorg/DCV desktops.
-- `ios-app-control` - Control the foreground Openbase iOS app by opening a URL or deep link, muting or unmuting the active call, switching to the debug LiveKit voice test call, or switching back to the regular developer call.
+- `phone-app-control` - Control the Openbase app on the user's phone (iOS or Android): open a URL or deep link, mute or unmute the active call, and, on iOS, switch to the debug LiveKit voice test call or back to the regular developer call.
 - `openbase-super-agent-dispatcher` - Dispatch, continue, steer, transfer, and manage Openbase Super Agents from a dispatcher or another Super Agent.
 - `openbase-coder-reports` - Write, discover, read, tag, and query Openbase Coder reports, including Super Agent provenance front matter.
 - `openbase-product-knowledge` - Answer questions about the Openbase Coder product (desktop app, iOS app, Android app, web console, Openbase Cloud) by routing to the correct page of the product docs at `cli/docs/` / docs.openbase.cloud.

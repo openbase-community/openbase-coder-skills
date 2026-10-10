@@ -1,40 +1,48 @@
 ---
-name: ios-app-control
+name: phone-app-control
 description: >-
-  Use this skill when the user asks an agent to control the foreground Openbase
-  iOS app, including opening a URL or deep link, muting the current call, or
-  unmuting the current call, switching to the debug LiveKit voice test call, or
-  switching back to the regular developer call.
-version: 0.2.0
+  Use this skill when the user asks an agent to do something in the Openbase
+  app on their phone (iOS or Android), including opening a URL or deep link,
+  muting or unmuting the current call, and, on iOS only, switching to the
+  debug LiveKit voice test call, switching back to the regular developer call,
+  or driving call state for an authorized voice test.
+version: 0.3.0
 ---
 
-# iOS App Control
+# Phone App Control
 
-Use the Openbase Coder CLI to send commands to the foreground Openbase iOS app.
-The app must be open, authenticated, and connected to the local Openbase Coder
-server. Commands are best-effort; if the app is closed or disconnected, nothing
-on the phone will happen.
+Use the Openbase Coder CLI to send commands to the Openbase app on the user's
+phone. The same commands work on iOS and Android. The app must be signed in and
+connected to this computer. Commands are best-effort; if the app is closed or
+disconnected, nothing on the phone will happen.
 
-## Commands
+When you tell the user what you did, say "on your phone" (or name the phone's
+actual platform if you know it). Do not call it the iOS app unless you are
+using one of the iOS-only commands below.
 
-Open a web link or deep link on iOS:
+## Commands for any phone
 
-```bash
-openbase-coder user ios open-url "https://example.com"
-openbase-coder user ios open-url "openbase://example"
-```
-
-Mute the active iOS voice call:
+Open a web link or deep link on the phone:
 
 ```bash
-openbase-coder user ios mute
+openbase-coder user phone open-url "https://example.com"
+openbase-coder user phone open-url "openbase://example"
 ```
 
-Unmute the active iOS voice call:
+If the app is in front, the link opens right away. If it is in the background
+or closed, the phone gets a notification, and the link opens when the user taps
+it. Tell the user to tap the notification in that case.
+
+Mute or unmute the active voice call:
 
 ```bash
-openbase-coder user ios unmute
+openbase-coder user phone mute
+openbase-coder user phone unmute
 ```
+
+## iOS-only commands
+
+These commands have no Android support yet. Use them only for an iPhone.
 
 Ask the foreground iOS app to upload its recent retained diagnostics logs to the
 local Openbase Coder server:
@@ -82,8 +90,8 @@ For acoustic testing, start the call, explicitly set speaker on, require `applie
 
 ## Manual Desktop Screen Control
 
-Use this when the user wants to manually control a desktop from the Openbase iOS
-app. Start the desktop screen share:
+Use this when the user wants to manually control a desktop from the Openbase
+phone app. Start the desktop screen share:
 
 ```
 openbase-coder desktop screen-share start
@@ -95,7 +103,7 @@ Stop the desktop screen share:
 openbase-coder desktop screen-share stop
 ```
 
-After the screen-share tile appears in iOS, the user opens it full screen and
+After the screen-share tile appears in the app, the user opens it full screen and
 taps Remote to enable manual control.
 
 This is separate from AI computer-use. Do not start an AI computer-use run
@@ -106,8 +114,8 @@ unless the user explicitly asks the AI to operate the screen.
 - Only use this for explicit user requests to control their phone.
 - `open-url` requires a URL scheme. It supports normal web URLs and custom deep
   links, but rejects `data:`, `file:`, and `javascript:` URLs.
-- Mute and unmute require an active Openbase voice call in the iOS app.
-- A command is applied only when the phone acknowledges it. The CLI prints `command delivered` on success; `published (unconfirmed)` plus a non-zero exit means no phone app received it (not connected, backgrounded, or signed out). Report that to the user as **not done**; never say the phone was muted, unmuted, or opened a URL unless the command was delivered.
+- Mute and unmute require an active Openbase voice call in the phone app.
+- A command is applied only when the phone acknowledges it. The CLI prints `command delivered` on success; `published (unconfirmed)` plus a non-zero exit means no phone app received it (not connected, backgrounded, or signed out). Report that to the user as **not done**; never say the phone was muted or unmuted unless the command was delivered. `open-url` instead says whether it opened the link or sent a notification to tap.
 - `upload-logs` requires the iOS app to be foregrounded or connected to the
   app-control WebSocket. It reuses the app's diagnostics uploader and does not
   require the user to tap the upload button.
@@ -115,6 +123,6 @@ unless the user explicitly asks the AI to operate the screen.
   filled in on the phone.
 - `start-developer-call` starts the normal Openbase dispatcher/developer call.
 - Manual desktop screen control requires an active Openbase screen share. If the
-  user cannot see the remote screen in iOS, run the screen-share start command;
+  user cannot see the remote screen in the app, run the screen-share start command;
   if the user cannot control it, make sure they tapped Remote in the full-screen
   screen-share view.
