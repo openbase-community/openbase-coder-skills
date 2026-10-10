@@ -2,7 +2,7 @@
 name: openbase-cloud-workspace-logins
 description: >-
   Use this skill when an agent must sign a command-line tool in (gh, Codex, Claude Code, gcloud, Heroku, an MCP server's OAuth, or any CLI that "opens a browser" to log in) from an Openbase cloud workspace, or from any host whose browser is on another device such as the user's phone. Covers device-code and paste-code flows, `openbase-coder browser open`, and pasting back a failed `http://localhost:<port>/...` callback address.
-version: 0.2.0
+version: 0.3.0
 ---
 
 # Logging CLIs In from a Cloud Workspace
@@ -10,6 +10,16 @@ version: 0.2.0
 In an Openbase cloud workspace there is no browser next to you: the user signs in on their phone or another computer. A login whose last step redirects to `http://localhost:<port>/...` therefore ends on the wrong device, because `localhost` on the phone is the phone. Prefer a device-code flow when the CLI offers one. For a loopback redirect, request localhost forwarding and check the phone’s acknowledgement; use paste-back when forwarding is unavailable. A successful device-code login does not test localhost forwarding.
 
 Login commands wait for the user. Run them so they keep running while you talk to the user (a background job or a separate terminal session), relay the URL and any code to the user exactly as printed, and tell them what to do on their side. Never ask the user for a password, and never type one on their behalf.
+
+Check the tool's existing authentication first, as the workspace user. If the intended account already works, continue the user's task without starting another login. Do not create a second pending login while an earlier one is still valid.
+
+## User-action handoff
+
+Start an interactive login with immediate background execution or a short initial tool yield; do not wait for the foreground tool's multi-minute timeout before reading its output. Read the output as soon as it appears. A background task ID is not the device code. Never block on `TaskOutput` or repeatedly poll while the user has not yet received the code.
+
+Put the exact current device code, login URL, and next action together in the final user-visible reply, even if you already sent them as intermediate commentary or opened the browser. During an active voice session, also promptly say the code and next action using `openbase-coder user say "<your agent name>" "<short instruction with the device code>"`; opening the page does not speak the code. Use your actual speaking name and read the device-code characters distinctly. Never speak passwords, tokens, or localhost callback URLs containing secrets.
+
+Say plainly that you are waiting for the user's authorization. A login shell can remain alive after the model's reply finishes; that is a background task, not evidence that productive coding continues. End your response after delivering the instructions; do not keep doing blocking tool waits just to hold the conversation open. Preserve the login process until success, expiry, or an explicit cancellation. When the user returns, check authentication again and continue the already requested task. If the code expired, start one replacement flow and relay its new code in the same way.
 
 ## 1. Prefer device-code and paste-code flows
 
