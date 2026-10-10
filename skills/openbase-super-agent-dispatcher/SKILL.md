@@ -40,7 +40,7 @@ using a Super Agent.
 - Start the thread with `sandbox: "danger-full-access"`.
 - Start the turn with `sandboxType: "dangerFullAccess"`.
 - `super_agents_start` only creates the thread. Pass the task as `prompt` in that same call so the first turn starts at once, or call `super_agents_start_turn` with the task right after. `developerInstructions` is standing guidance, never the task: a thread given only instructions sits idle with no messages.
-- Choose the agent's `cwd` yourself, by looking. Your own working directory is fixed (the projects folder on a Cloud workspace, home on a Mac) and nothing the user says changes it; only the Super Agent's `cwd` follows what they meant. For "start a Super Agent in tic-tac-toe", `ls` your own directory, the folders where the user keeps projects, any place they named, and the recent projects listed in `~/.openbase/coder-projects.json`, then use judgment to map the request to a real folder. Speech recognition mangles names ("tick tack toe", "tic tac toe" and `tic-tac-toe` are the same project) and users say partial names, so never require an exact match. Ask only when two folders are genuinely plausible. Never start an agent in your own directory just because nothing matched exactly; for a new project, create its folder first (see [Projects And Workspaces](#projects-and-workspaces)).
+- Choose the agent's `cwd` yourself, by looking. Your own working directory is fixed (the projects folder on a Cloud workspace, home on a Mac) and nothing the user says changes it; only the Super Agent's `cwd` follows what they meant. For "start a Super Agent in tic-tac-toe", `ls` your own directory, the folders where the user keeps projects, any place they named, and the recent projects listed in `~/.openbase/coder-projects.json`, then use judgment to map the request to a real folder. Speech recognition mangles names ("tick tack toe", "tic tac toe" and `tic-tac-toe` are the same project) and users say partial names, so never require an exact match. Ask only when two folders are genuinely plausible. Never start an agent in your own directory just because nothing matched exactly; for a new project, use `openbase-coder projects create PATH` first (see [Projects And Workspaces](#projects-and-workspaces)).
 - Say the agent is working only after a result shows a started turn (`turnStarted: true`, or a `turnId`). If the result says `turnStarted: false`, start the turn before confirming.
 - Delegate the task, not announcement instructions. The Super Agent's own installed base instructions supply its one-time named hello and truthful completion announcement, including read-only work. Do not teach it `user say`, add hello scripts or add completion reminders to an ordinary task prompt. Pass through explicit user wording or quiet requirements. Background speech does not require transferring the caller.
 - Do not add a text-only or silent-output restriction unless the user actually requested it for this task. Read-only work, a text message or a voice transcript does not imply silence; unrelated earlier tasks do not supply new constraints.
@@ -132,9 +132,7 @@ unless you just launched them.
 
 ## Projects And Workspaces
 
-When using the Super Agents MCP for a new project, create or choose a dedicated
-project folder first, then start the Super Agent session with that folder as the
-working directory using the MCP.
+For a new project, load the bundled `openbase-coder-projects` skill, choose a dedicated folder on the intended computer, and run `openbase-coder projects create PATH`. Start the Super Agent with the returned absolute path as its `cwd` and the actual task as its `prompt`. For an existing project, use `openbase-coder projects list` and inspect its folder before choosing it. Projects are discovered automatically from agent working directories; discovery registers folders but does not create or scaffold them.
 
 ## Plan Mode
 
