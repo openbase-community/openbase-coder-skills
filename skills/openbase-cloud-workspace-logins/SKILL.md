@@ -2,12 +2,12 @@
 name: openbase-cloud-workspace-logins
 description: >-
   Use this skill when an agent must sign a command-line tool in (gh, Codex, Claude Code, gcloud, Heroku, an MCP server's OAuth, or any CLI that "opens a browser" to log in) from an Openbase cloud workspace, or from any host whose browser is on another device such as the user's phone. Covers device-code and paste-code flows, `openbase-coder browser open`, and pasting back a failed `http://localhost:<port>/...` callback address.
-version: 0.1.0
+version: 0.2.0
 ---
 
 # Logging CLIs In from a Cloud Workspace
 
-In an Openbase cloud workspace there is no browser next to you: the user signs in on their phone or another computer. A login whose last step redirects to `http://localhost:<port>/...` therefore ends on the wrong device, because `localhost` on the phone is the phone. Pick the flow that never needs that redirect first, and fall back to the paste-back recipe below only when the tool offers nothing else.
+In an Openbase cloud workspace there is no browser next to you: the user signs in on their phone or another computer. A login whose last step redirects to `http://localhost:<port>/...` therefore ends on the wrong device, because `localhost` on the phone is the phone. Prefer a device-code flow when the CLI offers one. For a loopback redirect, request localhost forwarding and check the phone’s acknowledgement; use paste-back when forwarding is unavailable. A successful device-code login does not test localhost forwarding.
 
 Login commands wait for the user. Run them so they keep running while you talk to the user (a background job or a separate terminal session), relay the URL and any code to the user exactly as printed, and tell them what to do on their side. Never ask the user for a password, and never type one on their behalf.
 
@@ -26,6 +26,25 @@ These finish on the provider's servers or by pasting a code into the terminal, s
 
 If a tool has a `--device-auth`, `--device-code`, `--no-browser`, `--no-launch-browser`, or "paste the code" option, use it. Check `<tool> login --help` before assuming it does not.
 
+### GitHub CLI: sign in on the workspace, approve on the phone
+
+Run these commands as the same workspace user that runs the coding agent, in the same environment. A management shell may run as root; signing root in does not sign the workspace user in. Check `command -v gh` and `gh auth status --hostname github.com` first. If an account is already authenticated, verify it is the requested account before replacing or switching it. Environment-provided `GH_TOKEN` or `GITHUB_TOKEN` can override a saved login; check whether they are set without printing their values, and do not copy another computer’s token into the workspace.
+
+```bash
+gh auth login --web --hostname github.com --git-protocol https
+```
+
+Keep that process alive, relay its one-time device code, and open `https://github.com/login/device` on the phone. An interactive command may prompt to launch the browser; a command without a terminal may only print the URL. If the page does not open automatically, use `openbase-coder browser open https://github.com/login/device`. The phone approves GitHub CLI for the intended account. If authorized to control the phone, an agent can enter the device code and complete the approval; the user handles any password, passkey, or two-factor challenge directly.
+
+After the command finishes, verify from the same workspace user:
+
+```bash
+gh auth status --hostname github.com
+gh api user --jq .login
+```
+
+Use the returned login to confirm the account. Do not run `gh auth token` or print the credential file. GitHub CLI uses a device-code flow: it polls GitHub and does not redirect to localhost, so do not add `--callback-port` for this login. Workspace images that bundle GitHub CLI persist its default `~/.config/gh` directory on the workspace data volume. On older images or with an overridden `GH_CONFIG_DIR`/`XDG_CONFIG_HOME`, verify the actual config directory is durable before relying on it surviving an image replacement.
+
 ## 2. Send the login page to the phone
 
 ```bash
@@ -34,7 +53,7 @@ openbase-coder browser open "<login-url>"
 
 The command prints the URL, then asks the Openbase app on the user's phone to open it. It prints `Sent to the Openbase app on your phone.` when the app opens the URL or posts a notification to tap; older apps only acknowledge receipt. When a new app reports that neither succeeded, or no app responds, it falls back to Openbase Cloud and prints `Sent a notification to your phone; tap it to open the page.` after Cloud accepts the request. Otherwise it prints a hint to open the URL on any device. Callback setup and socket delivery each wait at most six seconds, and push fallback waits at most eighteen seconds (thirty seconds total, excluding process startup). Delivery failures exit successfully, so the calling CLI can continue. Use `--no-push` to skip Cloud fallback. Malformed URLs, URLs without a scheme and `data:`, `file:`, and `javascript:` URLs are rejected. `openbase-coder user ios open-url <url>` is an alias with callback forwarding disabled.
 
-When the login URL's `redirect_uri` points at `http://localhost:<port>/...` and the workspace runs the embedded tailnet node (every Openbase cloud workspace does), the command also exposes that port on the workspace's VPN address for up to ten minutes (`openbase-coder service expose <port> --one-shot`) and asks the phone to forward its own `localhost:<port>` there. It reports only that the workspace callback is exposed, since that does not confirm a listener on the phone. Use `--callback-port <port>` when the port is not in the URL and `--no-forward` to skip this. The phone-side forwarder ships in a later release; until the user's app has it, the paste-back recipe below still completes the login. See the product documentation's cloud workspace sign-in section for the forwarding contract.
+When the login URL's `redirect_uri` points at `http://localhost:<port>/...` and the workspace runs the embedded tailnet node (every Openbase cloud workspace does), the command also exposes that port on the workspace's VPN address for up to ten minutes (`openbase-coder service expose <port> --one-shot`) and asks the phone to forward its own `localhost:<port>` there. Workspace exposure alone does not confirm a listener on the phone. Only a phone acknowledgement of `started` confirms forwarding was prepared; `unsupported`, `failed`, `vpn_down`, or an absent acknowledgement means use the fallback. Use `--callback-port <port>` when the port is not in the URL and `--no-forward` to skip this. Phone support depends on the installed app version; an app without a callback listener reports `unsupported`. Until the installed app confirms forwarding, the paste-back recipe below still completes the login. See the product documentation's cloud workspace sign-in section for the forwarding contract.
 
 Openbase cloud workspaces preset `BROWSER` and `GH_BROWSER` to the `openbase-browser` executable, which invokes `openbase-coder browser open`, so CLIs that honour those variables send their login page to the phone without you doing anything. Still relay the printed URL to the user in case the phone could not be reached.
 
