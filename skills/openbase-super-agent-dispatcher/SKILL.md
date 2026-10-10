@@ -42,14 +42,8 @@ using a Super Agent.
 - `super_agents_start` only creates the thread. Pass the task as `prompt` in that same call so the first turn starts at once, or call `super_agents_start_turn` with the task right after. `developerInstructions` is standing guidance, never the task: a thread given only instructions sits idle with no messages.
 - Choose the agent's `cwd` yourself, by looking. Your own working directory is fixed (the projects folder on a Cloud workspace, home on a Mac) and nothing the user says changes it; only the Super Agent's `cwd` follows what they meant. For "start a Super Agent in tic-tac-toe", `ls` your own directory, the folders where the user keeps projects, any place they named, and the recent projects listed in `~/.openbase/coder-projects.json`, then use judgment to map the request to a real folder. Speech recognition mangles names ("tick tack toe", "tic tac toe" and `tic-tac-toe` are the same project) and users say partial names, so never require an exact match. Ask only when two folders are genuinely plausible. Never start an agent in your own directory just because nothing matched exactly; for a new project, create its folder first (see [Projects And Workspaces](#projects-and-workspaces)).
 - Say the agent is working only after a result shows a started turn (`turnStarted: true`, or a `turnId`). If the result says `turnStarted: false`, start the turn before confirming.
-- If the Super Agent is expected to run in the background, instruct it to
-  announce completion with:
-
-```bash
-openbase-coder user say "<agent name>" "<message>"
-```
-
-Use the derived `agentName` from the Super Agents MCP calls as the speaking agent name.
+- Delegate the task, not announcement instructions. The Super Agent's own installed base instructions supply its one-time named hello and truthful completion announcement, including read-only work. Do not teach it `user say`, add hello scripts or add completion reminders to an ordinary task prompt. Pass through explicit user wording or quiet requirements. Background speech does not require transferring the caller.
+- Do not add a text-only or silent-output restriction unless the user actually requested it for this task. Read-only work, a text message or a voice transcript does not imply silence; unrelated earlier tasks do not supply new constraints.
 
 ## Agent Name Selection
 
@@ -70,18 +64,7 @@ openbase-coder super-agent-name "<thread name>" --json
   constraints, or parts of the request that are not easy to speak clearly over
   voice.
 - Preserve filesystem intent exactly when handing off a spoken request. If the user names a file or folder, keep the words `file` or `folder` and pass an explicit filesystem path such as `~/Desktop/sarah-test-two/briefing.md`; never paraphrase that as `on the desktop`, which can be mistaken for a GUI/computer-control task. When a task depends on a prepared briefing, resolve and verify its path before starting the Super Agent, then include that exact path in the task prompt.
-- Do not add a task-specific "before starting work, introduce yourself"
-  instruction when standard Super Agent instructions are already included.
-  Those standard instructions own the one-time introduction.
-- If an introduction reminder is unavoidable for a prompt that might not include
-  standard Super Agent instructions, say that any introduction reminder is
-  idempotent and must be satisfied by exactly one canonical command:
-
-```bash
-openbase-coder user say "<agent name>" "Hey there, I'm <agent name>."
-```
-
-Use the same `agentName` passed to the Super Agents MCP call.
+- Do not add task-specific introduction reminders. The standard Super Agent instructions own introduction deduplication and completion ordering. If the product is missing those instructions, report the configuration problem instead of concealing it by teaching each child the default behavior.
 
 ## After Starting Or Assigning
 
