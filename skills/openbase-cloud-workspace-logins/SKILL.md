@@ -2,7 +2,7 @@
 name: openbase-cloud-workspace-logins
 description: >-
   Use this skill when an agent must sign a command-line tool in (gh, Codex, Claude Code, gcloud, Heroku, an MCP server's OAuth, or any CLI that "opens a browser" to log in) from an Openbase cloud workspace, or from any host whose browser is on another device such as the user's phone. Covers device-code and paste-code flows, `openbase-coder browser open`, and pasting back a failed `http://localhost:<port>/...` callback address.
-version: 0.3.0
+version: 0.4.0
 ---
 
 # Logging CLIs In from a Cloud Workspace
@@ -12,6 +12,18 @@ In an Openbase cloud workspace there is no browser next to you: the user signs i
 Login commands wait for the user. Run them so they keep running while you talk to the user (a background job or a separate terminal session), relay the URL and any code to the user exactly as printed, and tell them what to do on their side. Never ask the user for a password, and never type one on their behalf.
 
 Check the tool's existing authentication first, as the workspace user. If the intended account already works, continue the user's task without starting another login. Do not create a second pending login while an earlier one is still valid.
+
+## Install missing CLIs and preserve existing authentication
+
+Run `command -v gh`, `command -v heroku`, and `command -v gcloud` as the workspace user. Install only the tool the task needs. After installation run its `--version` and login `--help`; do not assume a missing executable means the account is unauthenticated. Keep existing credential directories and environment overrides intact.
+
+| Tool | Install if missing | Check before login | Login command |
+|---|---|---|---|
+| GitHub | On macOS: `brew install gh`. On Debian/Ubuntu with a package available: `sudo apt-get update && sudo apt-get install -y gh`; otherwise use the [official Linux repository instructions](https://github.com/cli/cli/blob/trunk/docs/install_linux.md). | `gh auth status --hostname github.com`, then `gh api user --jq .login` for the intended account. | `gh auth login --web --hostname github.com --git-protocol https` |
+| Heroku | On macOS: `brew tap heroku/brew && brew install heroku`. With Node/npm available: `npm install --global --prefix "$HOME/.local" heroku`, then add `$HOME/.local/bin` to the current `PATH`. Other platforms: [Heroku CLI installation](https://devcenter.heroku.com/articles/heroku-cli). | `heroku auth:whoami`; check whether `HEROKU_API_KEY` is set without printing it. | `heroku login`; if needed, `heroku login --browser openbase-browser` captures the ordinary remote login URL. |
+| Google Cloud | On macOS: `brew install --cask gcloud-cli`. On Linux follow the [official architecture-specific archive or package instructions](https://docs.cloud.google.com/sdk/docs/install-sdk); run the archive's `install.sh --quiet`, add its `bin` directory to `PATH`, and skip `gcloud init` until authentication is checked. | `gcloud auth list --filter=status:ACTIVE --format='value(account)'`; check the configured account and credential overrides without printing token values. | `gcloud auth login --no-launch-browser` for a phone verification-code flow, or `gcloud auth login` with `BROWSER=openbase-browser` for a loopback callback. |
+
+Do not clear credential files, run logout/revoke, change an already working account, or copy another machine's credentials to make a test pass. Google application-default credentials are separate from the gcloud CLI account: only use `gcloud auth application-default login` when the user's task needs ADC. A status command failing due to network or an unavailable credential helper is not proof that a new login is required; resolve that condition first.
 
 ## User-action handoff
 
@@ -63,7 +75,9 @@ openbase-coder browser open "<login-url>"
 
 The command prints the URL, then asks the Openbase app on the user's phone to open it. It prints `Sent to the Openbase app on your phone.` when the app opens the URL or posts a notification to tap; older apps only acknowledge receipt. When a new app reports that neither succeeded, or no app responds, it falls back to Openbase Cloud and prints `Sent a notification to your phone; tap it to open the page.` after Cloud accepts the request. Otherwise it prints a hint to open the URL on any device. Callback setup and socket delivery each wait at most six seconds, and push fallback waits at most eighteen seconds (thirty seconds total, excluding process startup). Delivery failures exit successfully, so the calling CLI can continue. Use `--no-push` to skip Cloud fallback. Malformed URLs, URLs without a scheme and `data:`, `file:`, and `javascript:` URLs are rejected. `openbase-coder user ios open-url <url>` is an alias with callback forwarding disabled.
 
-When the login URL's `redirect_uri` points at `http://localhost:<port>/...` and the workspace runs the embedded tailnet node (every Openbase cloud workspace does), the command also exposes that port on the workspace's VPN address for up to ten minutes (`openbase-coder service expose <port> --one-shot`) and asks the phone to forward its own `localhost:<port>` there. Workspace exposure alone does not confirm a listener on the phone. Only a phone acknowledgement of `started` confirms forwarding was prepared; `unsupported`, `failed`, `vpn_down`, or an absent acknowledgement means use the fallback. Use `--callback-port <port>` when the port is not in the URL and `--no-forward` to skip this. Phone support depends on the installed app version; an app without a callback listener reports `unsupported`. Until the installed app confirms forwarding, the paste-back recipe below still completes the login. See the product documentation's cloud workspace sign-in section for the forwarding contract.
+When the login URL itself is loopback, or its `redirect_uri`/`redirect_url` names `http://localhost:<port>/...`, `browser open` starts a short-lived authenticated relay on embedded-VPN workspaces. The CLI callback must already be listening on loopback and belong to the current workspace user. Openbase records that process and listener, exposes a separate random relay port on the VPN, and gives the phone a per-login capability. The iOS packet-tunnel extension or Android VPN app binds the phone's `127.0.0.1:<port>` and `[::1]:<port>` and forwards the unchanged browser request through the relay. The CLI's own callback port is not exposed directly. A listener ownership change, process exit, or ten-minute deadline closes the workspace relay; delayed notifications cannot restart the original lifetime. Multiple HTTP requests are allowed for logins that begin on a local page.
+
+Only `forward=started` confirms phone-side setup; the new native apps check relay health before acknowledging. `unsupported`, `failed`, `vpn_down`, or no acknowledgement means forwarding is unconfirmed and the paste-back fallback remains available. Use `--callback-port <port>` when the callback port is not in the URL and `--no-forward` to disable setup. Keep the login process alive while the user authorizes. Do not run `service expose <callback-port>` as a substitute: that omits the capability and process binding. Older apps/backends may require upgrading before they can use the authenticated relay.
 
 Openbase cloud workspaces preset `BROWSER` and `GH_BROWSER` to the `openbase-browser` executable, which invokes `openbase-coder browser open`, so CLIs that honour those variables send their login page to the phone without you doing anything. Still relay the printed URL to the user in case the phone could not be reached.
 
