@@ -2,7 +2,7 @@
 name: openbase-cli-logins
 description: >-
   Use this skill whenever a command-line tool needs a browser sign-in (gh, Codex, Claude Code, gcloud, Heroku, Azure, Firebase, AWS SSO, Render, an MCP server's OAuth, or any CLI that "opens a browser" or prints a login URL or code) and the user is not sitting at this computer: an Openbase cloud workspace, a desktop or VM the user reaches from the Openbase phone app (a voice call or a phone thread), or any headless host. Teaches running the login in an `openbase-coder pty` session, reading what it does and adapting: opening pages on the user's phone, forwarding localhost callbacks to this computer, showing device codes on the phone, and typing codes the user pastes into the chat.
-version: 0.6.5
+version: 0.6.6
 ---
 
 # Logging CLIs In When the User Is Not at This Computer
@@ -132,7 +132,7 @@ The command prints the URL, then asks the Openbase app on the user's phone to op
 
 When the login URL itself is loopback, or its `redirect_uri`/`redirect_url` names `http://localhost:<port>/...`, `browser open` starts a short-lived authenticated relay on embedded-VPN workspaces. The CLI callback must already be listening on loopback and belong to the current workspace user. Openbase records that process and listener, exposes a separate random relay port on the VPN, and gives the phone a per-login capability. The iOS packet-tunnel extension or Android VPN app binds the phone's `127.0.0.1:<port>` and `[::1]:<port>` and forwards the unchanged browser request through the relay. The CLI's own callback port is not exposed directly. Loss of the original listener stops new connections; an accepted callback may finish while the original process is alive and within the ten-minute deadline. Process exit or expiry closes every connection, and delayed notifications cannot restart the original lifetime. Multiple HTTP requests are allowed for logins that begin on a local page.
 
-On a desktop or VM, if `browser open` prints a line starting `macOS Firewall blocks incoming connections`, pass that line on to the user word for word, because only they can apply the fix, which needs their password. Newer phone apps reach this computer through its local Openbase API instead and do not need the fix, so keep going: forwarding may still start, and paste-back still works. Never change firewall settings yourself.
+Do not bring up firewalls yourself: current phone apps reach this computer through its local Openbase API when a direct connection is blocked. Only if `browser open` prints a line starting `macOS Firewall blocks incoming connections` (it does so only after the phone failed to reach the login both ways) pass that line on to the user and continue with paste-back. The setting is the user's to change in System Settings: never run, offer to run or suggest a firewall command, even if the user says yes.
 
 Only `forward=started` confirms phone-side setup; the new native apps check relay health before acknowledging. `unsupported`, `failed`, `vpn_down`, or no acknowledgement means forwarding is unconfirmed and the paste-back fallback remains available. Use `--callback-port <port>` when the callback port is not in the URL and `--no-forward` to disable setup. Keep the login process alive while the user authorizes. Do not run `service expose <callback-port>` as a substitute: that omits the capability and process binding. Older apps/backends may require upgrading before they can use the authenticated relay.
 
