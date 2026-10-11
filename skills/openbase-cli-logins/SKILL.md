@@ -1,13 +1,19 @@
 ---
-name: openbase-cloud-workspace-logins
+name: openbase-cli-logins
 description: >-
-  Use this skill when an agent must sign a command-line tool in (gh, Codex, Claude Code, gcloud, Heroku, Azure, Firebase, AWS SSO, an MCP server's OAuth, or any CLI that "opens a browser" to log in) from an Openbase cloud workspace, or from any host whose browser is on another device such as the user's phone. Teaches running the login in an `openbase-coder pty` session, reading what it does and adapting: opening pages on the phone, forwarding localhost callbacks, relaying device codes, and typing codes the user pastes into the chat.
-version: 0.5.5
+  Use this skill whenever a command-line tool needs a browser sign-in (gh, Codex, Claude Code, gcloud, Heroku, Azure, Firebase, AWS SSO, Render, an MCP server's OAuth, or any CLI that "opens a browser" or prints a login URL or code) and the user is not sitting at this computer: an Openbase cloud workspace, a desktop or VM the user reaches from the Openbase phone app (a voice call or a phone thread), or any headless host. Teaches running the login in an `openbase-coder pty` session, reading what it does and adapting: opening pages on the user's phone, forwarding localhost callbacks to this computer, showing device codes on the phone, and typing codes the user pastes into the chat.
+version: 0.6.0
 ---
 
-# Logging CLIs In from a Cloud Workspace
+# Logging CLIs In When the User Is Not at This Computer
 
-In an Openbase cloud workspace there is no browser next to you: the user signs in on their phone or another computer. A login whose last step redirects to `http://localhost:<port>/...` therefore ends on the wrong device, because `localhost` on the phone is the phone. Prefer a device-code flow when the CLI offers one. For a loopback redirect, request localhost forwarding and check the phone’s acknowledgement; use paste-back when forwarding is unavailable. A successful device-code login does not test localhost forwarding.
+Many CLI logins open a browser on the machine they run on. That only works when the user is looking at that machine. Use this skill whenever they are not:
+
+- **An Openbase cloud workspace**: there is no screen at all.
+- **A desktop or VM the user talks to from the phone**: in a voice call (your input arrives in `<voice>` tags) or a thread they write from the Openbase phone app. The computer's own browser may open, but nobody is looking at it, so do not rely on it. A VM's screen is not the user's screen either.
+- **Any headless host**, or when you are unsure: ask once whether the user is at this computer. If they are, the CLI's own browser flow is fine.
+
+On those hosts the browser is on the user's phone. A login whose last step redirects to `http://localhost:<port>/...` would end on the phone's own localhost, which is the wrong device. `openbase-coder browser open` fixes that: it opens the page on the phone and asks the phone to forward its localhost back to this computer over the Openbase VPN. That works on cloud workspaces and on desktops or VMs on the Openbase VPN. Without the VPN, the paste-back fallback below still works. Device-code logins need no forwarding at all.
 
 Login commands wait for the user. Run them in an `openbase-coder pty` session so they keep running while you talk to the user, relay the URL and any code to the user exactly as printed, and tell them what to do on their side. Never ask the user for a password, and never type one on their behalf.
 
