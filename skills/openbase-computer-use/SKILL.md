@@ -72,8 +72,13 @@ openbase-coder computer-use screen-share start
 openbase-coder computer-use screen-share stop
 ```
 
-After the screen-share tile appears in iOS, the user opens it full screen and
-taps Remote to enable manual control.
+The user can also start the share themselves from the call screen's **Share
+screen** button (iPhone, Android and the console Call page); only run the start
+command when they ask you to. After the screen-share tile appears, the user opens
+it full screen and taps Remote to enable manual control. The user's Stop, hanging
+up, or backgrounding the app ends the share on this computer; do not treat a
+share you started as still active after that without checking
+`openbase-coder desktop screen-share status`.
 
 This is not an AI computer-use run. Do not call
 `openbase-coder computer-use start` unless the user explicitly asks the AI to

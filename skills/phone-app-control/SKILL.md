@@ -91,7 +91,9 @@ For acoustic testing, start the call, explicitly set speaker on, require `applie
 ## Manual Desktop Screen Control
 
 Use this when the user wants to manually control a desktop from the Openbase
-phone app. Start the desktop screen share:
+phone app. The user can start it themselves: during a call, the **Share screen**
+button under the orb (iPhone and Android) asks this computer to share. If the
+user asks you to start it instead, run the desktop screen share:
 
 ```
 openbase-coder desktop screen-share start
@@ -104,7 +106,11 @@ openbase-coder desktop screen-share stop
 ```
 
 After the screen-share tile appears in the app, the user opens it full screen and
-taps Remote to enable manual control.
+taps Remote to enable manual control. Stop on the phone, hanging up, or the phone
+app going to the background all end the share on this computer; `openbase-coder
+desktop screen-share status` shows the companion state and, on macOS, whether
+Screen Recording and Accessibility are granted. If a start fails, repeat the
+permission message the command prints: it names the exact System Settings pane.
 
 This is separate from AI computer-use. Do not start an AI computer-use run
 unless the user explicitly asks the AI to operate the screen.
