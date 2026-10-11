@@ -2,7 +2,7 @@
 name: openbase-cli-logins
 description: >-
   Use this skill whenever a command-line tool needs a browser sign-in (gh, Codex, Claude Code, gcloud, Heroku, Azure, Firebase, AWS SSO, Render, an MCP server's OAuth, or any CLI that "opens a browser" or prints a login URL or code) and the user is not sitting at this computer: an Openbase cloud workspace, a desktop or VM the user reaches from the Openbase phone app (a voice call or a phone thread), or any headless host. Teaches running the login in an `openbase-coder pty` session, reading what it does and adapting: opening pages on the user's phone, forwarding localhost callbacks to this computer, showing device codes on the phone, and typing codes the user pastes into the chat.
-version: 0.6.2
+version: 0.6.3
 ---
 
 # Logging CLIs In When the User Is Not at This Computer
@@ -43,6 +43,7 @@ Every CLI logs in a little differently, and versions change. Do not pick a recip
 
    On macOS most CLIs ignore `$BROWSER` and open the Mac's own browser, which the user is not looking at. When the output shows a sign-in URL and you have not seen `browser open` report that the phone opened it, run `openbase-coder browser open "<url>"` yourself.
 3. Keep reading with `pty read <name> --wait 10` after each step. Answer every question the CLI asks before you tell the user anything is ready: for example GitHub CLI asks "Authenticate Git with your GitHub credentials? (Y/n)" before it prints its one-time code (`gh auth login --web --hostname github.com --git-protocol https` skips the protocol question). Only say a page was sent to the phone when `openbase-coder browser open` reported it, and never stop the session while the user is still entering a code: keep it until the tool's status command passes or the user cancels. When the output changes, decide again. A login may pass through several of these stages.
+   Your own environment may carry Openbase's model-gateway credentials (for example `ANTHROPIC_AUTH_TOKEN` and `ANTHROPIC_BASE_URL`). They are how you reach your model, not the user's login to that tool. Check a tool's sign-in from a pty session, which drops them, never from your own shell.
 4. When the follow-up turn arrives (or the user says they finished), confirm success with the tool's own status command (`gcloud auth list`, `heroku auth:whoami`, `codex login status`, `gh auth status`, `az account show`, …). Never say a tool is signed in until that confirms it. Then `openbase-coder pty stop <name>` if the session is still open.
 
 Codes and keys the user pastes into the chat are secrets: send them only with `--secret` (from stdin, so they stay out of the command line), never echo them back, and never put them in reports, commits, logs or other threads. `pty read` shows `[secret]` wherever the terminal echoed one. Sessions belong to the workspace user and end on their own after 30 minutes of inactivity.
