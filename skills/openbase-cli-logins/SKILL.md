@@ -2,7 +2,7 @@
 name: openbase-cli-logins
 description: >-
   Use this skill whenever a command-line tool needs a browser sign-in (gh, Codex, Claude Code, gcloud, Heroku, Azure, Firebase, AWS SSO, Render, an MCP server's OAuth, or any CLI that "opens a browser" or prints a login URL or code) and the user is not sitting at this computer: an Openbase cloud workspace, a desktop or VM the user reaches from the Openbase phone app (a voice call or a phone thread), or any headless host. Teaches running the login in an `openbase-coder pty` session, reading what it does and adapting: opening pages on the user's phone, forwarding localhost callbacks to this computer, showing device codes on the phone, and typing codes the user pastes into the chat.
-version: 0.6.6
+version: 0.7.0
 ---
 
 # Logging CLIs In When the User Is Not at This Computer
@@ -16,6 +16,16 @@ Many CLI logins open a browser on the machine they run on. That only works when 
 On those hosts the browser is on the user's phone. A login whose last step redirects to `http://localhost:<port>/...` would end on the phone's own localhost, which is the wrong device. `openbase-coder browser open` fixes that: it opens the page on the phone and asks the phone to forward its localhost back to this computer over the Openbase VPN. That works on cloud workspaces and on desktops or VMs on the Openbase VPN. Without the VPN, the paste-back fallback below still works. Device-code logins need no forwarding at all.
 
 Login commands wait for the user. Run them in an `openbase-coder pty` session so they keep running while you talk to the user, relay the URL and any code to the user exactly as printed, and tell them what to do on their side. Never ask the user for a password, and never type one on their behalf.
+
+## Known services: read their file first
+
+If the CLI is one of these, read its file before starting: it has the fastest flow, already tested.
+
+| CLI | File |
+| --- | --- |
+| GitHub CLI (`gh`) | [services/github.md](services/github.md) |
+
+For anything else, inspect and adapt as below.
 
 ## Run any login by inspecting it, not by rule
 
