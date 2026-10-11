@@ -1,15 +1,44 @@
 ---
 name: openbase-cloud-workspace-logins
 description: >-
-  Use this skill when an agent must sign a command-line tool in (gh, Codex, Claude Code, gcloud, Heroku, an MCP server's OAuth, or any CLI that "opens a browser" to log in) from an Openbase cloud workspace, or from any host whose browser is on another device such as the user's phone. Covers device-code and paste-code flows, `openbase-coder browser open`, and pasting back a failed `http://localhost:<port>/...` callback address.
-version: 0.4.0
+  Use this skill when an agent must sign a command-line tool in (gh, Codex, Claude Code, gcloud, Heroku, Azure, Firebase, AWS SSO, an MCP server's OAuth, or any CLI that "opens a browser" to log in) from an Openbase cloud workspace, or from any host whose browser is on another device such as the user's phone. Teaches running the login in an `openbase-coder pty` session, reading what it does and adapting: opening pages on the phone, forwarding localhost callbacks, relaying device codes, and typing codes the user pastes into the chat.
+version: 0.5.0
 ---
 
 # Logging CLIs In from a Cloud Workspace
 
 In an Openbase cloud workspace there is no browser next to you: the user signs in on their phone or another computer. A login whose last step redirects to `http://localhost:<port>/...` therefore ends on the wrong device, because `localhost` on the phone is the phone. Prefer a device-code flow when the CLI offers one. For a loopback redirect, request localhost forwarding and check the phone’s acknowledgement; use paste-back when forwarding is unavailable. A successful device-code login does not test localhost forwarding.
 
-Login commands wait for the user. Run them so they keep running while you talk to the user (a background job or a separate terminal session), relay the URL and any code to the user exactly as printed, and tell them what to do on their side. Never ask the user for a password, and never type one on their behalf.
+Login commands wait for the user. Run them in an `openbase-coder pty` session so they keep running while you talk to the user, relay the URL and any code to the user exactly as printed, and tell them what to do on their side. Never ask the user for a password, and never type one on their behalf.
+
+## Run any login by inspecting it, not by rule
+
+Every CLI logs in a little differently, and versions change. Do not pick a recipe from the CLI's name; watch what this login actually does and answer that. The tables further down are examples of what you may see, not a script.
+
+1. Start the login in a pty session and read it:
+
+   ```bash
+   openbase-coder pty start <name> -- <login command>
+   openbase-coder pty read <name> --wait 5
+   ```
+
+2. Read the output and decide what it is asking for. Look at the signals, and combine the primitives below as needed:
+
+   | What you see | What it means | What to do |
+   |---|---|---|
+   | A URL whose `redirect_uri` is `http://localhost:<port>/…` or `127.0.0.1`, or `openbase-coder ports listening` shows a new port owned by the login | A loopback callback: the browser must reach this workspace's localhost | `openbase-coder browser open "<url>"` (add `--callback-port <port>` when the URL does not name it). The phone forwards its own localhost to this one. If it reports forwarding is unconfirmed, ask the user to paste the address the browser ends on into the chat, then `openbase-coder browser replay "<address>"`. |
+   | A URL plus a prompt like "Enter authorization code", "Paste code here", "verification code" | The provider shows a code on its page that the CLI needs typed in | Open the URL on the phone with `openbase-coder browser open`. Ask the user to paste the code from the page into this chat. Type it with `printf '%s\n' "<code>" \| openbase-coder pty send <name> --secret`. |
+   | A short code plus a URL such as `…/device` or "enter this code" | A device code: the user types the code on the provider's page | Open the URL on the phone and give the user the code in your reply (and speak it during a call). The CLI finishes by itself. |
+   | "Press any key", "Open browser? (Y/n)", a menu | The CLI wants a keystroke or a choice | Answer it with `pty send` (`--no-enter` for a single key). Choose the browser, web, or device options that fit a phone. |
+   | A browser page that works but the provider rejects with an IP mismatch, or the CLI polls a session tied to this machine | The provider binds the browser session to this workspace's network address, which the phone cannot share | Say plainly that this flow cannot complete from a phone. Offer the CLI's own alternative and drive it the same way, for example `heroku login -i` with an API key the user creates in the provider's dashboard and pastes into the chat (send it `--secret`). |
+   | An API key, token or password prompt | The CLI wants a credential typed in | Only type a credential the user has pasted into this chat for this purpose, always with `--secret`. Never ask for or type a password the user has not chosen to give you. |
+
+3. Keep reading with `pty read <name> --wait 10` after each step. When the output changes, decide again. A login may pass through several of these stages.
+4. Confirm success with the tool's own status command (`gcloud auth list`, `heroku auth:whoami`, `codex login status`, `gh auth status`, `az account show`, …). Never say a tool is signed in until that confirms it. Then `openbase-coder pty stop <name>` if the session is still open.
+
+Codes and keys the user pastes into the chat are secrets: send them only with `--secret` (from stdin, so they stay out of the command line), never echo them back, and never put them in reports, commits, logs or other threads. `pty read` shows `[secret]` wherever the terminal echoed one. Sessions belong to the workspace user and end on their own after 30 minutes of inactivity.
+
+To link the workspace's own AI account (Codex or Claude Code) for its agents, run that CLI's login the same way, then `openbase-coder ai-account select codex` (or `claude_code`). `openbase-coder ai-account status` shows what is linked and in use; Openbase Cloud needs no separate account.
 
 Check the tool's existing authentication first, as the workspace user. If the intended account already works, continue the user's task without starting another login. Do not create a second pending login while an earlier one is still valid.
 
@@ -31,7 +60,7 @@ Do not clear credential files, run logout/revoke, change an already working acco
 
 ## User-action handoff
 
-Start an interactive login with immediate background execution or a short initial tool yield; do not wait for the foreground tool's multi-minute timeout before reading its output. Read the output as soon as it appears. A background task ID is not the device code. Never block on `TaskOutput` or repeatedly poll while the user has not yet received the code.
+Start an interactive login in a `pty` session; do not run it in the foreground and wait for a multi-minute timeout before reading its output. Read the output as soon as it appears. A background task ID is not the device code. Never block on `TaskOutput` or repeatedly poll while the user has not yet received the code.
 
 Put the exact current device code, login URL, and next action together in the final user-visible reply, even if you already sent them as intermediate commentary or opened the browser. During an active voice session, also promptly say the code and next action using `openbase-coder user say "<your agent name>" "<short instruction with the device code>"`; opening the page does not speak the code. Use your actual speaking name and read the device-code characters distinctly. Never speak passwords, tokens, or localhost callback URLs containing secrets.
 
@@ -91,7 +120,7 @@ For tools that only support a loopback redirect (`http://localhost:<port>/...` o
 
 1. Start the login and leave it waiting; its local callback listener must stay up.
 2. Get the login URL to the user (`openbase-coder browser open "<login-url>"`, or relay it).
-3. Ask the user to finish signing in and, when the browser shows a page that cannot be reached at `http://localhost:<port>/...`, either use the Openbase app's "Paste login link" action (it sends the address straight to this computer) or copy the full address from the address bar and paste it into this thread.
+3. Ask the user to finish signing in and, when the browser shows a page that cannot be reached at `http://localhost:<port>/...`, copy the full address from the address bar and paste it into this chat. (The Openbase app's "Paste login link" action sends it straight to this computer too.)
 4. If it was pasted into the thread, replay it inside the workspace; the command accepts only loopback addresses, never follows redirects, and never prints the code:
 
    ```bash
