@@ -2,7 +2,7 @@
 name: openbase-cloud-workspace-logins
 description: >-
   Use this skill when an agent must sign a command-line tool in (gh, Codex, Claude Code, gcloud, Heroku, Azure, Firebase, AWS SSO, an MCP server's OAuth, or any CLI that "opens a browser" to log in) from an Openbase cloud workspace, or from any host whose browser is on another device such as the user's phone. Teaches running the login in an `openbase-coder pty` session, reading what it does and adapting: opening pages on the phone, forwarding localhost callbacks, relaying device codes, and typing codes the user pastes into the chat.
-version: 0.5.1
+version: 0.5.2
 ---
 
 # Logging CLIs In from a Cloud Workspace
@@ -35,7 +35,7 @@ Every CLI logs in a little differently, and versions change. Do not pick a recip
    | A browser page that works but the provider rejects with an IP mismatch, or the CLI polls a session tied to this machine | The provider binds the browser session to this workspace's network address, which the phone cannot share | Say plainly that this flow cannot complete from a phone. Offer the CLI's own alternative and drive it the same way, for example `heroku login -i` with an API key the user creates in the provider's dashboard and pastes into the chat (send it `--secret`). |
    | An API key, token or password prompt | The CLI wants a credential typed in | Only type a credential the user has pasted into this chat for this purpose, always with `--secret`. Never ask for or type a password the user has not chosen to give you. |
 
-3. Keep reading with `pty read <name> --wait 10` after each step. When the output changes, decide again. A login may pass through several of these stages.
+3. Keep reading with `pty read <name> --wait 10` after each step. Answer every question the CLI asks before you tell the user anything is ready: for example GitHub CLI asks "Authenticate Git with your GitHub credentials? (Y/n)" before it prints its one-time code (`gh auth login --web --hostname github.com --git-protocol https` skips the protocol question). Only say a page was sent to the phone when `openbase-coder browser open` reported it, and never stop the session while the user is still entering a code: keep it until the tool's status command passes or the user cancels. When the output changes, decide again. A login may pass through several of these stages.
 4. When the follow-up turn arrives (or the user says they finished), confirm success with the tool's own status command (`gcloud auth list`, `heroku auth:whoami`, `codex login status`, `gh auth status`, `az account show`, …). Never say a tool is signed in until that confirms it. Then `openbase-coder pty stop <name>` if the session is still open.
 
 Codes and keys the user pastes into the chat are secrets: send them only with `--secret` (from stdin, so they stay out of the command line), never echo them back, and never put them in reports, commits, logs or other threads. `pty read` shows `[secret]` wherever the terminal echoed one. Sessions belong to the workspace user and end on their own after 30 minutes of inactivity.
