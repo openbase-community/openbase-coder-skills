@@ -30,6 +30,7 @@ Before publishing:
 1. Ensure the app listens on `127.0.0.1` at one TCP port.
 2. Pick a short lowercase name containing letters, numbers, or hyphens.
 3. Run `publish`. Do not invent a `.local` name; `.local` is reserved for mDNS.
+4. If the app checks the `Host` header, allow the hostname the command printed. Vite's `server.allowedHosts`, webpack-dev-server's `allowedHosts`, Django's `ALLOWED_HOSTS` and similar settings reject unknown hosts. The service zone depends on the environment: production uses `vpn.obs.so` and staging uses `vpn-staging.obs.so`. Take the zone from the printed URL rather than assuming production. When the config should work in both, list both zones, for example `allowedHosts: ['.vpn.obs.so', '.vpn-staging.obs.so']` for Vite. Never disable host checking (`allowedHosts: true` or `'all'`) to make it load.
 
 Persistence is a separate user choice. When the CLI asks whether to restore
 the gateway at login with launchd, relay that question and wait for the user's
