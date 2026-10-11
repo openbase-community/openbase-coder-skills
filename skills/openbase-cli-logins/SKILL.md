@@ -2,7 +2,7 @@
 name: openbase-cli-logins
 description: >-
   Use this skill whenever a command-line tool needs a browser sign-in (gh, Codex, Claude Code, gcloud, Heroku, Azure, Firebase, AWS SSO, Render, an MCP server's OAuth, or any CLI that "opens a browser" or prints a login URL or code) and the user is not sitting at this computer: an Openbase cloud workspace, a desktop or VM the user reaches from the Openbase phone app (a voice call or a phone thread), or any headless host. Teaches running the login in an `openbase-coder pty` session, reading what it does and adapting: opening pages on the user's phone, forwarding localhost callbacks to this computer, showing device codes on the phone, and typing codes the user pastes into the chat.
-version: 0.6.0
+version: 0.6.1
 ---
 
 # Logging CLIs In When the User Is Not at This Computer
@@ -49,6 +49,14 @@ Codes and keys the user pastes into the chat are secrets: send them only with `-
 To link the workspace's own AI account (Codex or Claude Code) for its agents, run that CLI's login the same way, then `openbase-coder ai-account select codex` (or `claude_code`). `openbase-coder ai-account status` shows what is linked and in use; Openbase Cloud needs no separate account.
 
 Check the tool's existing authentication first, as the workspace user. If the intended account already works, continue the user's task without starting another login. Do not create a second pending login while an earlier one is still valid.
+
+## Adding a new service integration
+
+This applies only when the user wants to connect a service that is not set up yet. Keep using any MCP tools that are already available in this conversation.
+
+- Prefer a CLI plus a skill: both work mid-conversation. A newly installed MCP server only appears after a new or restarted conversation.
+- If the service only ships an MCP server, offer to wrap it with MCPorter (Node 24+) into a CLI: `npx mcporter generate-cli --command <mcp-url-or-"npx -y <server>"> --name <tool> --bundle <tool>.js`. Run the result with `node <tool>.js --help`. For OAuth-backed servers, run `npx mcporter auth <mcp-url> --no-browser` in a pty session and handle its sign-in like any other login below. Then write a short skill describing the new CLI wherever the user keeps skills, so later agents find it.
+- Installing the MCP server directly is the fallback. Say that its tools only appear after the conversation is restarted.
 
 ## Install missing CLIs and preserve existing authentication
 
