@@ -2,7 +2,7 @@
 name: openbase-cli-logins
 description: >-
   Use this skill whenever a command-line tool needs a browser sign-in (gh, Codex, Claude Code, gcloud, Heroku, Azure, Firebase, AWS SSO, Render, an MCP server's OAuth, or any CLI that "opens a browser" or prints a login URL or code) and the user is not sitting at this computer: an Openbase cloud workspace, a desktop or VM the user reaches from the Openbase phone app (a voice call or a phone thread), or any headless host. Teaches running the login in an `openbase-coder pty` session, reading what it does and adapting: opening pages on the user's phone, forwarding localhost callbacks to this computer, showing device codes on the phone, and typing codes the user pastes into the chat.
-version: 0.6.1
+version: 0.6.2
 ---
 
 # Logging CLIs In When the User Is Not at This Computer
@@ -41,6 +41,7 @@ Every CLI logs in a little differently, and versions change. Do not pick a recip
    | A browser page that works but the provider rejects with an IP mismatch, or the CLI polls a session tied to this machine | The provider binds the browser session to this workspace's network address, which the phone cannot share | Say plainly that this flow cannot complete from a phone. Offer the CLI's own alternative and drive it the same way, for example `heroku login -i` with an API key the user creates in the provider's dashboard and pastes into the chat (send it `--secret`). |
    | An API key, token or password prompt | The CLI wants a credential typed in | Only type a credential the user has pasted into this chat for this purpose, always with `--secret`. Never ask for or type a password the user has not chosen to give you. |
 
+   On macOS most CLIs ignore `$BROWSER` and open the Mac's own browser, which the user is not looking at. When the output shows a sign-in URL and you have not seen `browser open` report that the phone opened it, run `openbase-coder browser open "<url>"` yourself.
 3. Keep reading with `pty read <name> --wait 10` after each step. Answer every question the CLI asks before you tell the user anything is ready: for example GitHub CLI asks "Authenticate Git with your GitHub credentials? (Y/n)" before it prints its one-time code (`gh auth login --web --hostname github.com --git-protocol https` skips the protocol question). Only say a page was sent to the phone when `openbase-coder browser open` reported it, and never stop the session while the user is still entering a code: keep it until the tool's status command passes or the user cancels. When the output changes, decide again. A login may pass through several of these stages.
 4. When the follow-up turn arrives (or the user says they finished), confirm success with the tool's own status command (`gcloud auth list`, `heroku auth:whoami`, `codex login status`, `gh auth status`, `az account show`, …). Never say a tool is signed in until that confirms it. Then `openbase-coder pty stop <name>` if the session is still open.
 
