@@ -3,9 +3,11 @@ name: phone-app-control
 description: >-
   Use this skill when the user asks an agent to do something in the Openbase
   app on their phone (iOS or Android), including opening a URL or deep link,
-  muting or unmuting the current call, and, on iOS only, switching to the
-  debug LiveKit voice test call, switching back to the regular developer call,
-  or driving call state for an authorized voice test.
+  muting or unmuting the current call, sharing this computer's screen to the
+  phone ("share my screen", "show me the screen", "let me see your screen",
+  "stop sharing"), and, on iOS only, switching to the debug LiveKit voice test
+  call, switching back to the regular developer call, or driving call state
+  for an authorized voice test.
 version: 0.3.0
 ---
 
@@ -90,10 +92,10 @@ For acoustic testing, start the call, explicitly set speaker on, require `applie
 
 ## Manual Desktop Screen Control
 
-Use this when the user wants to manually control a desktop from the Openbase
-phone app. The user can start it themselves: during a call, the **Share screen**
-button under the orb (iPhone and Android) asks this computer to share. If the
-user asks you to start it instead, run the desktop screen share:
+Use this when the user asks to see this computer's screen on their phone, or to
+control it from there ("share my screen", "show me what's on the screen"). The
+phone app has no Share button: starting a share is always your job, during the
+user's active call. Run the desktop screen share:
 
 ```
 openbase-coder desktop screen-share start
@@ -105,12 +107,18 @@ Stop the desktop screen share:
 openbase-coder desktop screen-share stop
 ```
 
-After the screen-share tile appears in the app, the user opens it full screen and
-taps Remote to enable manual control. Stop on the phone, hanging up, or the phone
-app going to the background all end the share on this computer; `openbase-coder
-desktop screen-share status` shows the companion state and, on macOS, whether
-Screen Recording and Accessibility are granted. If a start fails, repeat the
-permission message the command prints: it names the exact System Settings pane.
+On a Linux cloud workspace use `openbase-coder computer-use screen-share start`
+instead; a workspace without a display cannot share, and the command says so.
+
+The share appears on the phone by itself: a card with the live screen replaces
+the orb in the call view, with a **Stop** button; the user taps the card for full
+screen and taps Remote for manual control. Tell the user it is on their screen.
+Stop on the phone, hanging up, or the phone app going to the background all end
+the share on this computer; you can also end it with the stop command when the
+user asks. `openbase-coder desktop screen-share status` shows the companion
+state and, on macOS, whether Screen Recording and Accessibility are granted. If a
+start fails, repeat the message the command prints: it names the exact System
+Settings pane to grant, and the share works on the next start.
 
 This is separate from AI computer-use. Do not start an AI computer-use run
 unless the user explicitly asks the AI to operate the screen.
