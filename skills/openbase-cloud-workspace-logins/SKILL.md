@@ -2,7 +2,7 @@
 name: openbase-cloud-workspace-logins
 description: >-
   Use this skill when an agent must sign a command-line tool in (gh, Codex, Claude Code, gcloud, Heroku, Azure, Firebase, AWS SSO, an MCP server's OAuth, or any CLI that "opens a browser" to log in) from an Openbase cloud workspace, or from any host whose browser is on another device such as the user's phone. Teaches running the login in an `openbase-coder pty` session, reading what it does and adapting: opening pages on the phone, forwarding localhost callbacks, relaying device codes, and typing codes the user pastes into the chat.
-version: 0.5.4
+version: 0.5.5
 ---
 
 # Logging CLIs In from a Cloud Workspace
@@ -15,10 +15,10 @@ Login commands wait for the user. Run them in an `openbase-coder pty` session so
 
 Every CLI logs in a little differently, and versions change. Do not pick a recipe from the CLI's name; watch what this login actually does and answer that. The tables further down are examples of what you may see, not a script.
 
-1. Start the login in a pty session, passing your own Super Agent thread id (shown in your instructions) so a follow-up turn reaches you when the login ends, and read it:
+1. Start the login in a pty session and read it. A follow-up turn reaches your thread when the login ends (`pty start` finds your thread on its own; pass `--notify-thread <id>` only if it says it could not):
 
    ```bash
-   openbase-coder pty start <name> --notify-thread <your thread id> -- <login command>
+   openbase-coder pty start <name> -- <login command>
    openbase-coder pty read <name> --wait 5
    ```
 
@@ -66,7 +66,7 @@ Start an interactive login in a `pty` session; do not run it in the foreground a
 
 Put the exact current device code, login URL, and next action together in the final user-visible reply, even if you already sent them as intermediate commentary or opened the browser. During an active voice session, also promptly say the code and next action using `openbase-coder user say "<your agent name>" "<short instruction with the device code>"`; opening the page does not speak the code. Use your actual speaking name and read the device-code characters distinctly. Never speak passwords, tokens, or localhost callback URLs containing secrets.
 
-Say plainly that you are waiting for the user's authorization. If you started the pty session with `--notify-thread`, a follow-up turn arrives when the login ends; then check the result and report it. At the start of any later turn, run `openbase-coder pty status` and check sessions you started before saying anything about a login. A login shell can remain alive after the model's reply finishes; that is a background task, not evidence that productive coding continues. End your response after delivering the instructions; do not keep doing blocking tool waits just to hold the conversation open. Preserve the login process until success, expiry, or an explicit cancellation. When the user returns, check authentication again and continue the already requested task. If the code expired, start one replacement flow and relay its new code in the same way.
+Say plainly that you are waiting for the user's authorization. A follow-up turn arrives when the pty session ends; then check the result and report it. At the start of any later turn, run `openbase-coder pty status` and check sessions you started before saying anything about a login. A login shell can remain alive after the model's reply finishes; that is a background task, not evidence that productive coding continues. End your response after delivering the instructions; do not keep doing blocking tool waits just to hold the conversation open. Preserve the login process until success, expiry, or an explicit cancellation. When the user returns, check authentication again and continue the already requested task. If the code expired, start one replacement flow and relay its new code in the same way.
 
 ## 1. Prefer device-code and paste-code flows
 
