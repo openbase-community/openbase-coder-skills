@@ -8,7 +8,7 @@ description: >-
   "stop sharing"), and, on iOS only, switching to the debug LiveKit voice test
   call, switching back to the regular developer call, or driving call state
   for an authorized voice test.
-version: 0.3.0
+version: 0.3.1
 ---
 
 # Phone App Control
@@ -128,6 +128,7 @@ unless the user explicitly asks the AI to operate the screen.
 - Only use this for explicit user requests to control their phone.
 - `open-url` requires a URL scheme. It supports normal web URLs and custom deep
   links, but rejects `data:`, `file:`, and `javascript:` URLs.
+- `localhost` vs a published URL: a `http://localhost:<port>` link is right only for a CLI sign-in callback, because the phone forwards it to this computer through the login bridge (see `openbase-cli-logins`). To show the user a website or dev server you are running (for example Vite on 5173), publish the port first with `openbase-coder service publish <name> <port>` (see `openbase-service-publishing`) and open the published URL it prints; a plain `localhost` link for a website will not load on the phone.
 - Mute and unmute require an active Openbase voice call in the phone app.
 - A command is applied only when the phone acknowledges it. The CLI prints `command delivered` on success; `published (unconfirmed)` plus a non-zero exit means no phone app received it (not connected, backgrounded, or signed out). Report that to the user as **not done**; never say the phone was muted or unmuted unless the command was delivered. `open-url` instead says whether it opened the link or sent a notification to tap.
 - `upload-logs` requires the iOS app to be foregrounded or connected to the
