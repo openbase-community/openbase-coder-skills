@@ -2,7 +2,7 @@
 name: openbase-cli-logins
 description: >-
   Use this skill whenever a command-line tool needs a browser sign-in (gh, Codex, Claude Code, gcloud, Heroku, Azure, Firebase, AWS SSO, Render, an MCP server's OAuth, or any CLI that "opens a browser" or prints a login URL or code) and the user is not sitting at this computer: an Openbase cloud workspace, a desktop or VM the user reaches from the Openbase phone app (a voice call or a phone thread), or any headless host. Teaches running the login in an `openbase-coder pty` session, reading what it does and adapting: opening pages on the user's phone, forwarding localhost callbacks to this computer, showing device codes on the phone, and typing codes the user pastes into the chat.
-version: 0.7.2
+version: 0.7.3
 ---
 
 # Logging CLIs In When the User Is Not at This Computer
