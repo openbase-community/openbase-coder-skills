@@ -24,6 +24,8 @@ If one is set, `gh` uses it and `gh auth login` refuses to store a new login. Te
 openbase-coder pty start gh-login -- gh auth login --hostname github.com --git-protocol https --web
 ```
 
+Always through `openbase-coder pty start`, never as a plain shell command: a login run directly by your shell tool is killed when your turn ends, while the user is still on GitHub's page, and its code dies with it. The pty session outlives the turn. Start one login and keep it: never start another `gh auth login` while a code is still valid (about 15 minutes), because each new run invalidates the previous code and the user ends up typing dead codes.
+
 - `--hostname github.com` skips the "GitHub.com or Enterprise?" question.
 - `--git-protocol https` skips the HTTPS/SSH question and any SSH key upload prompt. If the user wants SSH, use `--git-protocol ssh --skip-ssh-key`.
 - `--web` picks the browser/device flow (no token paste).
