@@ -164,6 +164,11 @@ read and (with approval) send personal messages:
   [whatsapp-skill](https://github.com/openbase-community/whatsapp-skill). It keeps
   sending behind approved contacts and explicit approval.
 - The user can choose either, both, or neither.
+- After either skill is installed, point the user at **Configure → Contacts**
+  in the console or desktop app: it asks them to categorize everyone they have
+  messaged in the last year, and those categories decide what agents may do
+  with each contact. Agents follow the bundled `openbase-messaging-contacts`
+  skill before reading or sending personal messages.
 
 ### 8. Screen sharing / computer control
 
