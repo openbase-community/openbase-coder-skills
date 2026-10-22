@@ -17,6 +17,7 @@ npx skills add openbase-community/openbase-coder-skills --skill openbase-super-a
 npx skills add openbase-community/openbase-coder-skills --skill openbase-product-knowledge
 npx skills add openbase-community/openbase-coder-skills --skill openbase-file-sync
 npx skills add openbase-community/openbase-coder-skills --skill openbase-service-publishing
+npx skills add openbase-community/openbase-coder-skills --skill openbase-databases-and-storage
 npx skills add openbase-community/openbase-coder-skills --skill openbase-cli-logins
 npx skills add openbase-community/openbase-coder-skills --skill openbase-laptop-tools
 npx skills add openbase-community/openbase-coder-skills --skill responding-to-voice-tag
